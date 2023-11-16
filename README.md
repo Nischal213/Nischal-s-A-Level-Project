@@ -10,6 +10,264 @@ difficulty = 1
 def clear_box(box_type , button_name):
             box_type['text'] = ''
             button_name['state'] = 'normal'
+import random
+import string
+import time
+import pymysql
+from tkinter import *
+db = pymysql.connect(
+    host = 'localhost',
+    user = 'root',
+    password = 'root',
+    database = 'game_db')
+cursor = db.cursor()
+change = False
+#---------------------------------------------------------------------------------- (Allowing Access to db)
+question_number = 0
+attempt = 1
+real = False
+root = False
+def clear_box(box_type , button_name):
+        box_type['text'] = ''
+        button_name['state'] = 'normal'
+def login_system():
+    def register():
+        window.destroy()
+        root = Tk()
+        root.geometry('700x500')
+        def next():
+            global change , question_number , hold_first_name , hold_last_name , hold_password
+            if question_number == 0:
+                first_name = place_holder_box.get()
+                last_name = place_holder_box2.get()
+                if first_name == '' or last_name == '':
+                    change = True
+                    error_string = 'Cannot be blank'
+                elif not(first_name.isalpha) or not(last_name.isalpha()):
+                    change = True
+                    error_string = 'Name cannot contain special chars'
+                if change:
+                    button['state'] = 'disabled'
+                    error_message['text'] = error_string
+                    root.after(2000 , clear_box , error_message , button )
+                    change = False
+                else:
+                    question_number += 1
+                    hold_first_name , hold_last_name = first_name , last_name
+                    place_holder_box.delete(0,END)
+                    place_holder_box2.delete(0,END)
+                    button['state'] = 'disabled'
+                    root.after(100 , clear_box , error_message , button )
+            if question_number == 1:
+                place_holder_label['text'] = 'Password'
+                place_holder_label2['text'] = 'Confirm Password'
+                if button['state'] == 'normal':
+                    password = place_holder_box.get()
+                    conf_password = place_holder_box2.get()
+                    if not(password == conf_password):
+                        error_string = 'Passwords not matching'
+                        change = True
+                    if password == '' or conf_password == '':
+                        error_string = 'Password cannot be blank'
+                        change = True
+                    if change:
+                        error_message['text'] = error_string
+                        button['state'] = 'disabled'
+                        root.after(2000, clear_box , error_message , button)
+                        change = False
+                    else:
+                        question_number += 1
+                        hold_password = password
+                        place_holder_box.delete(0,END)
+                        place_holder_box2.delete(0,END)
+                        button['state'] = 'disabled'
+                        root.after(100 , clear_box , error_message , button )
+            if question_number == 2:
+                def has_special_chars(str):
+                    for i in str:
+                        if i in string.punctuation:
+                            return True
+                    else:
+                        return False
+                def new_clear_box():
+                    username_error_box['text'] = ''
+                    email_error_box['text'] = ''
+                    button['state'] = 'normal'
+                place_holder_label['text'] = 'Username'
+                place_holder_label2['text'] = 'Email'
+                username_error_string = ''
+                email_error_string = ''
+                if button['state'] == 'normal':
+                    username = place_holder_box.get()
+                    email = place_holder_box2.get()
+                    cursor.execute(f'SELECT username FROM user_info WHERE username = "{username}"')
+                    username_row = cursor.rowcount
+                    cursor.execute(f'SELECT email FROM user_info WHERE email = "{email}" ')
+                    email_row = cursor.rowcount
+                    if username_row != 0:
+                        change = True
+                        username_error_string = 'Username already taken'
+                    elif len(username) > 20 or len(username) < 3:
+                        change = True
+                        username_error_string = 'Username can only be 3-20 chars long'
+                    elif has_special_chars(username):
+                        change = True
+                        username_error_string = 'Username must not have special chars'
+                    elif len([i for i in username if i in string.digits]) == len(username):
+                        change = True
+                        username_error_string = 'Username may contain private info'
+                    if not(has_special_chars(email)) or email == '':
+                        change = True
+                        email_error_string = 'Email does not exist'
+                    elif email_row != 0:
+                        change = True
+                        email_error_string = 'Email already taken'
+                    if change:
+                        username_error_box['text'] = username_error_string
+                        email_error_box['text'] = email_error_string
+                        button['state'] = 'disabled'
+                        root.after(2000, new_clear_box)
+                        change = False
+                    else:
+                        button['state'] = 'disabled'
+                        cursor.execute(f'INSERT INTO user_info (first_name,last_name,username,pass_word,email,best_point) VALUES ("{hold_first_name}","{hold_last_name}","{username}","{hold_password}","{email}",0)')
+                        db.commit()
+                        root.destroy()
+                        login()
+        label = Label(text = 'Register Page' , font = 24)
+        label.pack()
+        place_holder_label = Label(text = 'First name:' , font = 24)
+        place_holder_label.pack(pady=10)
+        place_holder_box = Entry()
+        place_holder_box.pack()
+        place_holder_label2 = Label(text = 'Last name:', font = 24)
+        place_holder_label2.pack(pady=10)
+        place_holder_box2 = Entry()
+        place_holder_box2.pack()
+        button = Button(text = 'Enter' , command = next , font = 24)
+        button.pack(pady=10)
+        error_message = Message(text = '' , fg = 'red' , font = 24 , width = 450)
+        error_message.pack()
+        username_error_box = Message(text='' , font = 24 , fg = 'red' , width = 550)
+        username_error_box.place(x = 420 , y = 64)
+        email_error_box = Message(text='' , font = 24 , fg = 'red' , width = 550)
+        email_error_box.place(x = 420 , y = 128)
+        root.mainloop()
+    def login():
+            global real
+            real = Tk()
+            real.geometry('700x500')
+            label = Label(real,text = 'An account has been created!' , font = 24)
+            label.pack()
+            button = Button(real, text = 'Go to login page' , command = login_page , font = 24 , width = 20)
+            button.pack(pady=20)
+            real.mainloop()
+    def login_page():
+            if real:
+                real.destroy()
+            if not(root):
+                window.destroy()
+            def checking():
+                global attempt
+                pass_flag = True
+                error_string = ''
+                username = username_entry.get()
+                password = password_entry.get()
+                cursor.execute(f'SELECT username, pass_word FROM user_info WHERE username = "{username}" AND pass_word = "{password}"')
+                if cursor.rowcount == 0:
+                    error_string = f'Invalid password or username!, Attempt: {attempt}'
+                    pass_flag = False
+                if not(pass_flag) and error_string:
+                    if attempt == 6:
+                        attempt = 0
+                        error_message['text'] = 'Too many failed attempts in a row, Temporarily on lockdown for 30 seconds'
+                        check_button['state'] = 'disabled'
+                        master.after(30000, clear_box , error_message , check_button)
+                    else:
+                        check_button['state'] = 'disabled'
+                        error_message['text'] = error_string
+                        master.after(2000, clear_box , error_message , check_button)
+                        attempt += 1
+                else:
+                    master.destroy()
+            def forgot():
+                master.destroy()
+                def forgot_check():
+                    def custom_clear_box():
+                        username_box['text'] = ''
+                        email_box['text'] = ''
+                        button['state'] = 'normal'
+                    modify = False
+                    username = username_entry.get()
+                    cursor.execute(f'SELECT username FROM user_info WHERE username = "{username}"')
+                    if cursor.rowcount == 0:
+                        username_box['text'] = 'Username does not exist'
+                        modify = True
+                    email = email_entry.get()
+                    cursor.execute(f'SELECT email FROM user_info WHERE email = "{email}"')
+                    if cursor.rowcount == 0:
+                        email_box['text'] = 'Email does not exist'
+                        modify = True
+                    if modify:
+                        button['state'] = 'disabled'
+                        new_master.after(2000, custom_clear_box)
+                    else:
+                        new_master.destroy()
+                new_master = Tk()
+                new_master.geometry('700x500')
+                label = Label(text = 'Forgot Page' , font = 24)
+                label.pack()
+                username = Label(text = 'Username' , font = 24)
+                username.pack(pady=10)
+                username_entry = Entry()
+                username_entry.pack()
+                username_box = Message(text='',font = 24 , fg = 'red' , width = 350)
+                username_box.pack()
+                email_label = Label(text = 'Email' , font = 24)
+                email_label.pack()
+                email_entry = Entry()
+                email_entry.pack()
+                email_box = Message(text = '' , font = 24 , fg = 'red' , width = 350)
+                email_box.pack()
+                button = Button(text = 'Enter' , font = 24,command = forgot_check)
+                button.pack(pady=10)
+                new_master.mainloop()
+            master = Tk()
+            master.geometry('700x500')
+            label = Label(text = 'Login Page' , font = 24)
+            label.pack()
+            username = Label(text = 'Username:' , font = 24)
+            username.pack(pady=10)
+            username_entry = Entry()
+            username_entry.pack()
+            password = Label(master, text = 'Password:' , font = 24)
+            password.pack(pady=10)
+            password_entry = Entry()
+            password_entry.pack()
+            check_button = Button(text = 'Enter' , command = checking , font = 24 , width = 10)
+            check_button.pack(pady=10)
+            error_message = Message(text = '' , font = 24 , fg = 'red' , width = 550)
+            error_message.pack()
+            forgot_button = Button(text = 'Forgot Password' , command = forgot , font = 24 , width = 20)
+            forgot_button.pack(pady=10)
+            master.mainloop()
+    window = Tk()
+    window.geometry('700x500')
+    label1 = Label(window, text = 'Welcome to my game' , font = 24)
+    label1.pack(padx=10,pady=10)
+    label2 = Label(window, text = 'Would you like to login or register?' , font = 24)
+    label2.pack(padx=10,pady=40)
+    register_button = Button(text = 'Register' , font = 24 , width = 10 , command=register)
+    register_button.place(x = 200 , y = 150)
+    login_button = Button(text = 'Login' , font = 24 , width = 10 , command=login_page)
+    login_button.place(x = 400 , y = 150)
+    window.mainloop()
+#---------------------------------------------------------------------------------- (Register)
+op_lst = ['+','-','/','x']
+lst_length = 10
+points = 0
+lives = 4
+difficulty = 1
 def giveAnswer(num1,rand_op,num2):
         if rand_op == '+':
             correct_ans = num1 + num2
@@ -208,7 +466,7 @@ def medium_game_UI():
     def quit_game():
         medium_game.destroy()
         game_over_screen()
-    label = Label(text = 'Meidum Difficulty', font = ('Helvatical Bold' , 15))
+    label = Label(text = 'Medium Difficulty', font = ('Helvatical Bold' , 15))
     label.pack()
     if isinstance(result,float):
         question_msg = f'What is {num1} {rand_op} {num2} to 1 d.p?'
@@ -227,7 +485,7 @@ def medium_game_UI():
     lives_box = Message(text = f'Lives: {lives}' , font = ('Malgun Gothic',14) , width = 350)
     lives_box.place(x = 350 , y = 199)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
-    quit_button.place(x = 611, y = 468)
+    quit_button.place(x = 600, y = 468)
     medium_game.mainloop()
 def hard_game_UI():
     global lst_length , points , lives , difficulty
@@ -309,7 +567,7 @@ def hard_game_UI():
     lives_box = Message(text = f'Lives: {lives}' , font = ('Malgun Gothic',14) , width = 350)
     lives_box.place(x = 350 , y = 199)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
-    quit_button.place(x = 611, y = 468)
+    quit_button.place(x = 600, y = 468)
     hard_game.mainloop()
 
 
@@ -341,4 +599,5 @@ def game_over_screen():
 def display_lb():
     print('To be worked on')
 
-easy_game_UI()
+game_difficulty_choice()
+
