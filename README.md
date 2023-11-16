@@ -1,15 +1,3 @@
-from tkinter import *
-import random
-change = False
-question_number = 0
-op_lst = ['+','-','/','x']
-lst_length = 10
-points = 0
-lives = 4
-difficulty = 1
-def clear_box(box_type , button_name):
-            box_type['text'] = ''
-            button_name['state'] = 'normal'
 import random
 import string
 import time
@@ -398,9 +386,9 @@ def easy_game_UI():
     output_box.pack()
     button = Button(text = 'Enter', font = ('Microsoft JhengHei UI',13) , command = checker)
     button.pack()
-    point_box = Message(text = f'Points: {points}' , font =  ('Malgun Gothic',14)  , width = 350)
+    point_box = Message(text = f'Points: {points}' , font =  ('Comic Sans MS',14)  , width = 350)
     point_box.place(x = 250 , y = 210)
-    lives_box = Message(text = f'Lives: {lives}' , font =  ('Malgun Gothic',14) , width = 350)
+    lives_box = Message(text = f'Lives: {lives}' , font =  ('Comic Sans MS',14) , width = 350)
     lives_box.place(x = 350 , y = 209)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
@@ -478,11 +466,11 @@ def medium_game_UI():
     answer_box.pack(pady=10)
     output_box = Message(text='' , font = 24 , width = 350)
     output_box.pack()
-    button = Button(text = 'Enter', font = 24 , command = checker)
+    button = Button(text = 'Enter', font = ('Microsoft JhengHei UI',13) , command = checker)
     button.pack()
-    point_box = Message(text = f'Points: {points}' , font = ('Malgun Gothic',14) , width = 350)
+    point_box = Message(text = f'Points: {points}' , font = ('Comic Sans MS',14) , width = 350)
     point_box.place(x = 250 , y = 200)
-    lives_box = Message(text = f'Lives: {lives}' , font = ('Malgun Gothic',14) , width = 350)
+    lives_box = Message(text = f'Lives: {lives}' , font = ('Comic Sans MS',14) , width = 350)
     lives_box.place(x = 350 , y = 199)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
@@ -560,11 +548,11 @@ def hard_game_UI():
     answer_box.pack(pady=10)
     output_box = Message(text='' , font = 24 , width = 350)
     output_box.pack()
-    button = Button(text = 'Enter', font = 24 , command = checker)
+    button = Button(text = 'Enter', font = ('Microsoft JhengHei UI',13) , command = checker)
     button.pack()
-    point_box = Message(text = f'Points: {points}' , font = ('Malgun Gothic',14) , width = 350)
+    point_box = Message(text = f'Points: {points}' , font = ('Comic Sans MS',14) , width = 350)
     point_box.place(x = 250 , y = 200)
-    lives_box = Message(text = f'Lives: {lives}' , font = ('Malgun Gothic',14) , width = 350)
+    lives_box = Message(text = f'Lives: {lives}' , font = ('Comic Sans MS',14) , width = 350)
     lives_box.place(x = 350 , y = 199)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
@@ -576,9 +564,9 @@ def game_over_screen():
     difficulty_lst = ['Easy','Medium','Hard']
     game_over = Tk()
     game_over.geometry('700x500')
-    label = Label(text = 'GAME OVER!' , fg = 'red' , width = 50 , font =  ('Helvatical Bold' , 24))
+    label = Label(text = 'GAME OVER!' , fg = 'red' , width = 50 , font =  ('System' , 24))
     label.pack()
-    label2 = Label(text = f'You scored {points} in {difficulty_lst[difficulty-1]} difficulty' , font = 24 , width = 350)
+    label2 = Label(text = f'You scored {points} in {difficulty_lst[difficulty-1]} difficulty' , font = ('Comic Sans MS',14) , width = 350)
     label2.pack(pady=20)
     def retry_button():
         game_over.destroy()
@@ -588,16 +576,80 @@ def game_over_screen():
         display_lb()
     def quit_button():
         game_over.destroy()
-    retry = Button(text = 'Play again' , font = 24 , width = 15 , command = retry_button)
+    retry = Button(text = 'Play again' , font = ('Microsoft JhengHei UI',13) , width = 15 , command = retry_button)
     retry.pack(pady=10)
-    lb = Button(text = 'See Leaderboards' , font = 24 , width = 15 , command = lb_button)
+    lb = Button(text = 'See Leaderboards' , font = ('Microsoft JhengHei UI',13) , width = 15 , command = lb_button)
     lb.pack(pady=10)
-    quit = Button(text = 'Quit', font = 24 , width = 15 , command = quit_button)
+    quit = Button(text = 'Quit', font = ('Microsoft JhengHei UI',13) , width = 15 , command = quit_button)
     quit.pack(pady=10)
     game_over.mainloop()
 
 def display_lb():
     print('To be worked on')
 
-game_difficulty_choice()
 
+#----------------------------------------------------------------------------------(Game System)
+game_over_screen()
+
+
+
+#----------------------------------------------------------------------------------(Font Type)
+import tkinter as tk
+from tkinter import font
+import pyperclip  # For copying to clipboard
+
+root = tk.Tk()
+root.title("Available Fonts in Tkinter")
+
+# Get all available fonts
+all_fonts = list(font.families())
+
+# Initialize the font index for navigation
+current_font_index = 0
+
+# Function to update the displayed font
+def update_font(delta):
+    global current_font_index
+    current_font_index = (current_font_index + delta) % len(all_fonts)
+    selected_font = all_fonts[current_font_index]
+    text_label.config(font=(selected_font, 20))  # Increased font size for better visibility
+    text_label["text"] = f"Sample Text - Font: {selected_font}"
+    root.clipboard_clear()
+    root.clipboard_append(selected_font)
+
+# Function to update the text label with the next font
+def next_font():
+    update_font(1)
+
+# Function to update the text label with the previous font
+def previous_font():
+    update_font(-1)
+
+# Function to copy the selected font to the clipboard
+def copy_to_clipboard():
+    selected_font = all_fonts[current_font_index]
+    root.clipboard_clear()
+    root.clipboard_append(selected_font)
+
+# Create a tkinter Label to display text with different fonts
+text_label = tk.Label(root, text="Sample Text", font=("Arial", 20))  # Default font for sample text
+text_label.pack()
+
+# Button to navigate to the previous font
+prev_button = tk.Button(root, text="Previous", command=previous_font)
+prev_button.pack(side=tk.LEFT, padx=5)
+
+# Button to navigate to the next font
+next_button = tk.Button(root, text="Next", command=next_font)
+next_button.pack(side=tk.LEFT, padx=5)
+
+# Button to copy the displayed font to clipboard
+copy_button = tk.Button(root, text="Copy to Clipboard", command=copy_to_clipboard)
+copy_button.pack(side=tk.RIGHT, padx=5)
+
+# Display the initial font
+text_label.config(font=(all_fonts[current_font_index], 20))
+root.clipboard_clear()
+root.clipboard_append(all_fonts[current_font_index])
+
+root.mainloop()
