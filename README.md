@@ -1,4 +1,3 @@
-# Nischal-s-A-Level-Project
 from tkinter import *
 import random
 change = False
@@ -44,9 +43,10 @@ def create_questions(difficulty):
             num_lst.append(int_ans)
             lst_length += 1
     return num_lst
-
-def main_game():
-    easy_mode , medium_mode , hard_mode = False , False ,False
+def clear_animation(box_name , message):
+            box_name['text'] = f'{message}'
+            box_name['fg'] = 'black'
+def game_difficulty():
     game = Tk()
     game.geometry('700x500')
     label = Label(text = 'Select Game Difficulty' , font = 24)
@@ -59,40 +59,53 @@ def main_game():
     game.mainloop()
 
 def easy_game_UI():
-    def display_question(num_lst , lst_length):
+    def display_question(num_lst=list):
         random_tuple = random.choice(num_lst)
-        lst_length -= 1 
         num_lst.remove(random_tuple)
         num1 , rand_op , num2 = random_tuple[0] , random_tuple[1] , random_tuple[2]
         return num1 , rand_op , num2
     easy_game = Tk()
     easy_game.geometry('700x500')
     lst_length = 10
+    points = 0
+    lives = 4
     num_lst = create_questions(1)
-    num1 , rand_op , num2 = display_question(num_lst , lst_length)
+    num1 , rand_op , num2 = display_question(num_lst)
+    lst_length -= 1
     def checker():
-        global points , lives , num1 , rand_op , num2
+        nonlocal lives , points , num1 , rand_op , num2 , num_lst , lst_length
         user_ans = answer_box.get()
         correct_ans = giveAnswer(num1 , rand_op , num2)
         if user_ans == str(correct_ans) :
             button['state'] = 'disabled'
-            points = points + 1
-            question_box['text'] = 'Correct!'
-            question_box['fg'] = 'green'
-            easy_game.after(2000 , clear_box , question_box , button)
+            answer_box.delete(0,END)
+            points += 1
+            output_box['text'] = 'Correct!'
+            output_box['fg'] = 'green'
+            point_box['text'] = '+1'
+            point_box['fg'] = 'green'
+            easy_game.after(1000, clear_animation , point_box , f'Points: {points}')
+            easy_game.after(1000 , clear_box , output_box , button)
         else:
             button['state'] = 'disabled'
-            points = points + 1
-            question_box['text'] = 'Incorrect!'
-            question_box['fg'] = 'red'
-            easy_game.after(2000 , clear_box , question_box , button)
+            answer_box.delete(0,END)
+            lives -= 1
+            output_box['text'] = 'Incorrect!'
+            output_box['fg'] = 'red'
+            lives_box['text'] = '-1'
+            lives_box['fg'] = 'red'
+            easy_game.after(1000, clear_animation , lives_box , f'Lives: {lives}')
+            easy_game.after(1000 , clear_box , output_box , button)
         if lst_length == 0:
-            num1 , rand_op , num2 = display_question(num_lst , lst_length)
-        elif lives != 0 and lst_length != 0:
+            lst_length = 10
             num_lst = create_questions(1)
-            num1 , rand_op , num2 = display_question(num_lst , lst_length)
-        else:
-            exit()
+            num1 , rand_op , num2 = display_question(num_lst)
+            lst_length -= 1
+        elif lives != 0 and lst_length != 0:
+            num1 , rand_op , num2 = display_question(num_lst)
+            lst_length -= 1
+        if lives == 0:
+             exit()
         question_box['text'] = f'What is {num1} {rand_op} {num2}?'
     label = Label(text = 'Easy Difficulty', font = 24)
     label.pack()
@@ -100,8 +113,14 @@ def easy_game_UI():
     question_box.pack(pady=20)
     answer_box = Entry()
     answer_box.pack(pady=10)
+    output_box = Message(text='' , font = 24 , width = 350)
+    output_box.pack()
     button = Button(text = 'Enter', font = 24 , command = checker)
-    button.pack(pady=10)
+    button.pack()
+    point_box = Message(text = f'Points: {points}' , font = 24 , width = 350)
+    point_box.place(x = 250 , y = 200)
+    lives_box = Message(text = f'Lives: {lives}' , font = 24, width = 350)
+    lives_box.place(x = 350 , y = 199)
     easy_game.mainloop()
 
-main_game()
+game_difficulty()
