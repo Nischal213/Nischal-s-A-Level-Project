@@ -296,10 +296,16 @@ def create_questions(difficulty):
 def clear_animation(box_name , message):
     box_name['text'] = f'{message}'
     box_name['fg'] = 'black'
+def remove_point_box_animation(window_name , point_box , output_box , button):
+    window_name.after(1000, clear_animation , point_box , f'Points: {points}')
+    window_name.after(1000 , clear_box , output_box , button)
+def remove_lives_box_animation(window_name , lives_box , output_box , button):
+    window_name.after(1000, clear_animation , lives_box , f'Lives: {lives}')
+    window_name.after(1000 , clear_box , output_box , button)
 def game_difficulty_choice():
     game = Tk()
     game.geometry('700x500')
-    label = Label(text = 'Select Game Difficulty' , font = 24)
+    label = Label(text = 'Select Game Difficulty' , font = ('Comic Sans MS',14))
     label.pack()
     def easy():
         game.destroy()
@@ -310,11 +316,11 @@ def game_difficulty_choice():
     def hard():
         game.destroy()
         hard_game_UI()
-    easy_button = Button(text = 'Easy' , font = 24 , width = 10 , command = easy)
+    easy_button = Button(text = 'Easy' , font = ('Microsoft JhengHei UI',13) , width = 10 , command = easy)
     easy_button.pack(pady=10)
-    medium_button = Button(text = 'Medium' , font = 24 , width = 10 , command = medium)
+    medium_button = Button(text = 'Medium' , font = ('Microsoft JhengHei UI',13) , width = 10 , command = medium)
     medium_button.pack(pady=10)
-    hard_button = Button(text = 'Hard' , font = 24 , width = 10 , command = hard)
+    hard_button = Button(text = 'Hard' , font = ('Microsoft JhengHei UI',13) , width = 10 , command = hard)
     hard_button.pack(pady=10)
     game.mainloop()
 def choose_question(num_lst=list):
@@ -343,8 +349,7 @@ def easy_game_UI():
                 output_box['fg'] = 'green'
                 point_box['text'] = '+1'
                 point_box['fg'] = 'green'
-                easy_game.after(1000, clear_animation , point_box , f'Points: {points}')
-                easy_game.after(1000 , clear_box , output_box , button)
+                remove_point_box_animation(easy_game , point_box , output_box , button)
             else:
                 button['state'] = 'disabled'
                 answer_box.delete(0,END)
@@ -353,8 +358,7 @@ def easy_game_UI():
                 output_box['fg'] = 'red'
                 lives_box['text'] = '-1'
                 lives_box['fg'] = 'red'
-                easy_game.after(1000, clear_animation , lives_box , f'Lives: {lives}')
-                easy_game.after(1000 , clear_box , output_box , button)
+                remove_lives_box_animation(easy_game , lives_box , output_box , button)
             if lst_length == 0:
                 lst_length = 10
                 num_lst = create_questions(difficulty)
@@ -374,11 +378,13 @@ def easy_game_UI():
             answer_box.delete(0,END)
         question_box['text'] = f'What is {num1} {rand_op} {num2}?'
     def quit_game():
+        nonlocal num_lst
+        num_lst.clear()
         easy_game.destroy()
         game_over_screen()
     label = Label(text = 'Easy Difficulty', font =  ('Helvatical Bold' , 15))
     label.pack()
-    question_box = Message(text = f'What is {num1} {rand_op} {num2}?' , font =  ('Helvatical Bold' , 15) , width = 350)
+    question_box = Message(text = f'What is {num1} {rand_op} {num2}?' , font =  ('Comic Sans MS',17) , width = 350)
     question_box.pack(pady=20)
     answer_box = Entry()
     answer_box.pack(pady=10)
@@ -387,9 +393,9 @@ def easy_game_UI():
     button = Button(text = 'Enter', font = ('Microsoft JhengHei UI',13) , command = checker)
     button.pack()
     point_box = Message(text = f'Points: {points}' , font =  ('Comic Sans MS',14)  , width = 350)
-    point_box.place(x = 250 , y = 210)
+    point_box.place(x = 250 , y = 220)
     lives_box = Message(text = f'Lives: {lives}' , font =  ('Comic Sans MS',14) , width = 350)
-    lives_box.place(x = 350 , y = 209)
+    lives_box.place(x = 350 , y = 220)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
     easy_game.mainloop()
@@ -417,8 +423,7 @@ def medium_game_UI():
                 output_box['fg'] = 'green'
                 point_box['text'] = '+1'
                 point_box['fg'] = 'green'
-                medium_game.after(1000, clear_animation , point_box , f'Points: {points}')
-                medium_game.after(1000 , clear_box , output_box , button)
+                remove_point_box_animation(medium_game , point_box , output_box , button)
             else:
                 button['state'] = 'disabled'
                 answer_box.delete(0,END)
@@ -427,8 +432,7 @@ def medium_game_UI():
                 output_box['fg'] = 'red'
                 lives_box['text'] = '-1'
                 lives_box['fg'] = 'red'
-                medium_game.after(1000, clear_animation , lives_box , f'Lives: {lives}')
-                medium_game.after(1000 , clear_box , output_box , button)
+                remove_lives_box_animation(medium_game , lives_box , output_box , button)
             if lst_length == 0:
                 lst_length = 10
                 num_lst = create_questions(difficulty)
@@ -452,6 +456,8 @@ def medium_game_UI():
             medium_game.after(1000 , clear_box , output_box , button)
             answer_box.delete(0,END)
     def quit_game():
+        nonlocal num_lst
+        num_lst.clear()
         medium_game.destroy()
         game_over_screen()
     label = Label(text = 'Medium Difficulty', font = ('Helvatical Bold' , 15))
@@ -460,7 +466,7 @@ def medium_game_UI():
         question_msg = f'What is {num1} {rand_op} {num2} to 1 d.p?'
     else:
         question_msg = f'What is {num1} {rand_op} {num2}?'
-    question_box = Message(text = f'{question_msg}' , font =  ('Helvatical Bold' , 15) , width = 350)
+    question_box = Message(text = f'{question_msg}' , font =  ('Comic Sans MS',17) , width = 350)
     question_box.pack(pady=20)
     answer_box = Entry()
     answer_box.pack(pady=10)
@@ -469,9 +475,9 @@ def medium_game_UI():
     button = Button(text = 'Enter', font = ('Microsoft JhengHei UI',13) , command = checker)
     button.pack()
     point_box = Message(text = f'Points: {points}' , font = ('Comic Sans MS',14) , width = 350)
-    point_box.place(x = 250 , y = 200)
+    point_box.place(x = 250 , y = 220)
     lives_box = Message(text = f'Lives: {lives}' , font = ('Comic Sans MS',14) , width = 350)
-    lives_box.place(x = 350 , y = 199)
+    lives_box.place(x = 350 , y = 220)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
     medium_game.mainloop()
@@ -499,8 +505,7 @@ def hard_game_UI():
                 output_box['fg'] = 'green'
                 point_box['text'] = '+1'
                 point_box['fg'] = 'green'
-                hard_game.after(1000, clear_animation , point_box , f'Points: {points}')
-                hard_game.after(1000 , clear_box , output_box , button)
+                remove_point_box_animation(hard_game , point_box , output_box , button)
             else:
                 button['state'] = 'disabled'
                 answer_box.delete(0,END)
@@ -509,8 +514,7 @@ def hard_game_UI():
                 output_box['fg'] = 'red'
                 lives_box['text'] = '-1'
                 lives_box['fg'] = 'red'
-                hard_game.after(1000, clear_animation , lives_box , f'Lives: {lives}')
-                hard_game.after(1000 , clear_box , output_box , button)
+                remove_lives_box_animation(hard_game , lives_box , output_box , button)
             if lst_length == 0:
                 lst_length = 10
                 num_lst = create_questions(difficulty)
@@ -534,6 +538,8 @@ def hard_game_UI():
             hard_game.after(1000 , clear_box , output_box , button)
             answer_box.delete(0,END)
     def quit_game():
+        nonlocal num_lst
+        num_lst.clear()
         hard_game.destroy()
         game_over_screen()
     label = Label(text = 'Hard Difficulty', font = ('Helvatical Bold' , 15))
@@ -542,7 +548,7 @@ def hard_game_UI():
         question_msg = f'What is {num1} {rand_op} {num2} to 1 d.p?'
     else:
         question_msg = f'What is {num1} {rand_op} {num2}?'
-    question_box = Message(text = f'{question_msg}' , font = ('Helvatical Bold' , 15) , width = 350)
+    question_box = Message(text = f'{question_msg}' , font = ('Comic Sans MS',17) , width = 350)
     question_box.pack(pady=20)
     answer_box = Entry()
     answer_box.pack(pady=10)
@@ -551,9 +557,9 @@ def hard_game_UI():
     button = Button(text = 'Enter', font = ('Microsoft JhengHei UI',13) , command = checker)
     button.pack()
     point_box = Message(text = f'Points: {points}' , font = ('Comic Sans MS',14) , width = 350)
-    point_box.place(x = 250 , y = 200)
+    point_box.place(x = 250 , y = 220)
     lives_box = Message(text = f'Lives: {lives}' , font = ('Comic Sans MS',14) , width = 350)
-    lives_box.place(x = 350 , y = 199)
+    lives_box.place(x = 350 , y = 220)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
     hard_game.mainloop()
@@ -569,6 +575,10 @@ def game_over_screen():
     label2 = Label(text = f'You scored {points} in {difficulty_lst[difficulty-1]} difficulty' , font = ('Comic Sans MS',14) , width = 350)
     label2.pack(pady=20)
     def retry_button():
+        global lives , points , difficulty
+        lives = 4
+        points = 0
+        difficulty = 1
         game_over.destroy()
         game_difficulty_choice()
     def lb_button():
