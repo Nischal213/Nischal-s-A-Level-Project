@@ -1,30 +1,34 @@
 import random
 import string
-import time
 import pymysql
 from tkinter import *
 db = pymysql.connect(
-    host = 'localhost',
+    host = '192.168.0.51',
     user = 'root',
     password = 'root',
     database = 'game_db')
 cursor = db.cursor()
-change = False
 #---------------------------------------------------------------------------------- (Allowing Access to db)
-question_number = 0
 attempt = 1
 real = False
 root = False
+holding_username = ''
 def clear_box(box_type , button_name):
         box_type['text'] = ''
         button_name['state'] = 'normal'
+def center_window(window_name):
+    screen_width = int((window_name.winfo_screenwidth()) / 2 - 375)
+    screen_height = int((window_name.winfo_screenheight()) / 2 - 250)
+    window_name.geometry(f'700x500+{screen_width}+{screen_height}')
 def login_system():
     def register():
         window.destroy()
         root = Tk()
-        root.geometry('700x500')
+        center_window(root)
+        change = False
+        question_number = 0
         def next():
-            global change , question_number , hold_first_name , hold_last_name , hold_password
+            nonlocal change , question_number
             if question_number == 0:
                 first_name = place_holder_box.get()
                 last_name = place_holder_box2.get()
@@ -117,6 +121,8 @@ def login_system():
                         root.after(2000, new_clear_box)
                         change = False
                     else:
+                        global holding_username
+                        holding_username = username
                         button['state'] = 'disabled'
                         cursor.execute(f'INSERT INTO user_info (first_name,last_name,username,pass_word,email,best_point) VALUES ("{hold_first_name}","{hold_last_name}","{username}","{hold_password}","{email}",0)')
                         db.commit()
@@ -140,15 +146,19 @@ def login_system():
         username_error_box.place(x = 420 , y = 64)
         email_error_box = Message(text='' , font = 24 , fg = 'red' , width = 550)
         email_error_box.place(x = 420 , y = 128)
+        root.resizable(False,False)
+        root.protocol('WM_DELETE_WINDOW', False)
         root.mainloop()
     def login():
             global real
             real = Tk()
-            real.geometry('700x500')
+            center_window(real)
             label = Label(real,text = 'An account has been created!' , font = 24)
             label.pack()
             button = Button(real, text = 'Go to login page' , command = login_page , font = 24 , width = 20)
             button.pack(pady=20)
+            real.resizable(False,False)
+            real.protocol('WM_DELETE_WINDOW', False)
             real.mainloop()
     def login_page():
             if real:
@@ -177,6 +187,9 @@ def login_system():
                         master.after(2000, clear_box , error_message , check_button)
                         attempt += 1
                 else:
+                    global holding_username
+                    holding_username = username
+                    print(holding_username)
                     master.destroy()
             def forgot():
                 master.destroy()
@@ -202,11 +215,11 @@ def login_system():
                     else:
                         new_master.destroy()
                 new_master = Tk()
-                new_master.geometry('700x500')
+                center_window(new_master)
                 label = Label(text = 'Forgot Page' , font = 24)
                 label.pack()
-                username = Label(text = 'Username' , font = 24)
-                username.pack(pady=10)
+                username_label = Label(text = 'Username' , font = 24)
+                username_label.pack(pady=10)
                 username_entry = Entry()
                 username_entry.pack()
                 username_box = Message(text='',font = 24 , fg = 'red' , width = 350)
@@ -219,17 +232,19 @@ def login_system():
                 email_box.pack()
                 button = Button(text = 'Enter' , font = 24,command = forgot_check)
                 button.pack(pady=10)
+                new_master.resizable(False,False)
+                new_master.protocol('WM_DELETE_WINDOW', False)
                 new_master.mainloop()
             master = Tk()
-            master.geometry('700x500')
+            center_window(master)
             label = Label(text = 'Login Page' , font = 24)
             label.pack()
-            username = Label(text = 'Username:' , font = 24)
-            username.pack(pady=10)
+            username_label = Label(text = 'Username:' , font = 24)
+            username_label.pack(pady=10)
             username_entry = Entry()
             username_entry.pack()
-            password = Label(master, text = 'Password:' , font = 24)
-            password.pack(pady=10)
+            password_label = Label(master, text = 'Password:' , font = 24)
+            password_label.pack(pady=10)
             password_entry = Entry()
             password_entry.pack()
             check_button = Button(text = 'Enter' , command = checking , font = 24 , width = 10)
@@ -238,9 +253,11 @@ def login_system():
             error_message.pack()
             forgot_button = Button(text = 'Forgot Password' , command = forgot , font = 24 , width = 20)
             forgot_button.pack(pady=10)
+            master.resizable(False,False)
+            master.protocol('WM_DELETE_WINDOW', False)
             master.mainloop()
     window = Tk()
-    window.geometry('700x500')
+    center_window(window)
     label1 = Label(window, text = 'Welcome to my game' , font = 24)
     label1.pack(padx=10,pady=10)
     label2 = Label(window, text = 'Would you like to login or register?' , font = 24)
@@ -249,6 +266,8 @@ def login_system():
     register_button.place(x = 200 , y = 150)
     login_button = Button(text = 'Login' , font = 24 , width = 10 , command=login_page)
     login_button.place(x = 400 , y = 150)
+    window.resizable(False,False)
+    window.protocol('WM_DELETE_WINDOW', False)
     window.mainloop()
 #---------------------------------------------------------------------------------- (Register)
 op_lst = ['+','-','/','x']
@@ -304,7 +323,7 @@ def remove_lives_box_animation(window_name , lives_box , output_box , button):
     window_name.after(1000 , clear_box , output_box , button)
 def game_difficulty_choice():
     game = Tk()
-    game.geometry('700x500')
+    center_window(game)
     label = Label(text = 'Select Game Difficulty' , font = ('Comic Sans MS',14))
     label.pack()
     def easy():
@@ -322,6 +341,8 @@ def game_difficulty_choice():
     medium_button.pack(pady=10)
     hard_button = Button(text = 'Hard' , font = ('Microsoft JhengHei UI',13) , width = 10 , command = hard)
     hard_button.pack(pady=10)
+    game.resizable(False,False)
+    game.protocol('WM_DELETE_WINDOW', False)
     game.mainloop()
 def choose_question(num_lst=list):
     random_tuple = random.choice(num_lst)
@@ -331,7 +352,7 @@ def choose_question(num_lst=list):
 def easy_game_UI():
     global lst_length , points , lives , difficulty
     easy_game = Tk()
-    easy_game.geometry('700x500')
+    center_window(easy_game)
     num_lst = create_questions(difficulty)
     num1 , rand_op , num2 = choose_question(num_lst)
     lst_length -= 1
@@ -339,7 +360,7 @@ def easy_game_UI():
         global lst_length , points , lives , difficulty
         nonlocal num1 , rand_op , num2 , num_lst
         user_ans = answer_box.get()
-        if not(user_ans.isalpha()):
+        if not(user_ans.isalpha()) and user_ans:
             correct_ans = giveAnswer(num1 , rand_op , num2)
             if user_ans == str(correct_ans) :
                 button['state'] = 'disabled'
@@ -398,13 +419,15 @@ def easy_game_UI():
     lives_box.place(x = 350 , y = 220)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
+    easy_game.resizable(False,False)
+    easy_game.protocol('WM_DELETE_WINDOW', False)
     easy_game.mainloop()
 def medium_game_UI():
     global lst_length , points , lives , difficulty
     lives -= 1
     difficulty += 1
     medium_game = Tk()
-    medium_game.geometry('700x500')
+    center_window(medium_game)
     num_lst = create_questions(difficulty)
     num1 , rand_op , num2 = choose_question(num_lst)
     lst_length -= 1
@@ -413,7 +436,7 @@ def medium_game_UI():
         global lst_length , points , lives , difficulty
         nonlocal num1 , rand_op , num2 , num_lst
         user_ans = answer_box.get()
-        if not(user_ans.isalpha()):
+        if not(user_ans.isalpha()) and user_ans:
             correct_ans = giveAnswer(num1 , rand_op , num2)
             if user_ans == str(correct_ans) :
                 button['state'] = 'disabled'
@@ -480,13 +503,15 @@ def medium_game_UI():
     lives_box.place(x = 350 , y = 220)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
+    medium_game.resizable(False,False)
+    medium_game.protocol('WM_DELETE_WINDOW', False)
     medium_game.mainloop()
 def hard_game_UI():
     global lst_length , points , lives , difficulty
     lives -= 2
     difficulty += 2
     hard_game = Tk()
-    hard_game.geometry('700x500')
+    center_window(hard_game)
     num_lst = create_questions(difficulty)
     num1 , rand_op , num2 = choose_question(num_lst)
     lst_length -= 1
@@ -495,7 +520,7 @@ def hard_game_UI():
         global lst_length , points , lives , difficulty
         nonlocal num1 , rand_op , num2 , num_lst
         user_ans = answer_box.get()
-        if not(user_ans.isalpha()):
+        if not(user_ans.isalpha()) and user_ans:
             correct_ans = giveAnswer(num1 , rand_op , num2)
             if user_ans == str(correct_ans) :
                 button['state'] = 'disabled'
@@ -562,14 +587,22 @@ def hard_game_UI():
     lives_box.place(x = 350 , y = 220)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
+    hard_game.resizable(False,False)
+    hard_game.protocol('WM_DELETE_WINDOW', False)
     hard_game.mainloop()
-
-
 def game_over_screen():
-    global points , difficulty
+    global points , difficulty , holding_username
     difficulty_lst = ['Easy','Medium','Hard']
+    user_personal_best = []
     game_over = Tk()
-    game_over.geometry('700x500')
+    center_window(game_over)
+    cursor.execute(f'SELECT best_point , best_points_difficulty FROM user_info WHERE username = "{holding_username}"')
+    for i in cursor:
+        user_personal_best.append(i)
+    print(user_personal_best)
+    if user_personal_best[0][0] < points:
+        cursor.execute(f'UPDATE user_info SET best_point = {points} , best_points_difficulty = "{difficulty_lst[difficulty-1]}" WHERE username = {holding_username}')
+        db.commit()
     label = Label(text = 'GAME OVER!' , fg = 'red' , width = 50 , font =  ('System' , 24))
     label.pack()
     label2 = Label(text = f'You scored {points} in {difficulty_lst[difficulty-1]} difficulty' , font = ('Comic Sans MS',14) , width = 350)
@@ -592,74 +625,85 @@ def game_over_screen():
     lb.pack(pady=10)
     quit = Button(text = 'Quit', font = ('Microsoft JhengHei UI',13) , width = 15 , command = quit_button)
     quit.pack(pady=10)
+    game_over.resizable(False,False)
+    game_over.protocol('WM_DELETE_WINDOW', False)
     game_over.mainloop()
-
 def display_lb():
-    print('To be worked on')
+    global holding_username
+    position = 0
+    def shift_lb():
+        nonlocal position
+        position += 1
+        if position == 3:
+            position = 0
+        if position == 0:
+            first_place['text'] = f'{hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty'
+            second_place['text'] = f'{hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty'
+            third_place['text'] = f'{hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty'
+        elif position == 1:
+            first_place['text'] = f'{medium_lb[0][0]} scored {medium_lb[0][1]} in {medium_lb[0][2]} difficulty'
+            second_place['text'] = f'{medium_lb[1][0]} scored {medium_lb[1][1]} in {medium_lb[1][2]} difficulty'
+            third_place['text'] = f'{medium_lb[2][0]} scored {medium_lb[2][1]} in {medium_lb[2][2]} difficulty'
+        elif position == 2:
+            first_place['text'] = f'{easy_lb[0][0]} scored {easy_lb[0][1]} in {easy_lb[0][2]} difficulty'
+            second_place['text'] = f'{easy_lb[1][0]} scored {easy_lb[1][1]} in {easy_lb[1][2]} difficulty'
+            third_place['text'] = f'{easy_lb[2][0]} scored {easy_lb[2][1]} in {easy_lb[2][2]} difficulty'
+    hard_lb = []
+    medium_lb = []
+    easy_lb = []
+    user_points = []
+    leaderboard = Tk()
+    center_window(leaderboard)
+    label = Label(text = 'Leaderboard' , font = 24)
+    label.pack()
+    cursor.execute('SELECT username , best_point , best_points_difficulty FROM user_info WHERE best_points_difficulty = "Hard" ORDER BY best_point DESC LIMIT 3;')
+    for i in cursor:
+        hard_lb.append(i)
+    cursor.execute('SELECT username , best_point , best_points_difficulty FROM user_info WHERE best_points_difficulty = "Medium" ORDER BY best_point DESC LIMIT 3;')
+    for i in cursor:
+        medium_lb.append(i)
+    cursor.execute('SELECT username , best_point , best_points_difficulty FROM user_info WHERE best_points_difficulty = "Easy" ORDER BY best_point DESC LIMIT 3;')
+    for i in cursor:
+        easy_lb.append(i)
+    cursor.execute(f'SELECT best_point , best_points_difficulty FROM user_info WHERE username = "{holding_username}"')
+    for i in cursor:
+        user_points.append(i)
+    first_place = Label(text = f'{hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty' , font = 24)
+    first_place.pack(pady=10)
+    second_place = Label(text = f'{hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty' , font = 24)
+    second_place.pack(pady=10)
+    third_place = Label(text = f'{hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty' , font = 24)
+    third_place.pack(pady=10)
+    button = Button(text = 'Next' , command = shift_lb)
+    button.pack(pady=10)
+    if user_points[0][1] == None:
+        msg = f'No personal best record'
+    else:
+        msg = f'Personal best is {user_points[0][0]} in {user_points[0][1]} difficulty'
+    user_best = Label(text = f'{msg}' , font = 24)
+    user_best.pack(pady=10)
+    leaderboard.resizable(False,False)
+    leaderboard.protocol('WM_DELETE_WINDOW', False)
+    leaderboard.mainloop()
 
 
 #----------------------------------------------------------------------------------(Game System)
-game_over_screen()
+
+def main_game():
+    login_system()
+    game_difficulty_choice()
+
+main_game()
 
 
+----------------------------------------------------------------------------------(To get Ip)
 
-#----------------------------------------------------------------------------------(Font Type)
-import tkinter as tk
-from tkinter import font
-import pyperclip  # For copying to clipboard
+import socket
 
-root = tk.Tk()
-root.title("Available Fonts in Tkinter")
+def get_local_ip():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
 
-# Get all available fonts
-all_fonts = list(font.families())
-
-# Initialize the font index for navigation
-current_font_index = 0
-
-# Function to update the displayed font
-def update_font(delta):
-    global current_font_index
-    current_font_index = (current_font_index + delta) % len(all_fonts)
-    selected_font = all_fonts[current_font_index]
-    text_label.config(font=(selected_font, 20))  # Increased font size for better visibility
-    text_label["text"] = f"Sample Text - Font: {selected_font}"
-    root.clipboard_clear()
-    root.clipboard_append(selected_font)
-
-# Function to update the text label with the next font
-def next_font():
-    update_font(1)
-
-# Function to update the text label with the previous font
-def previous_font():
-    update_font(-1)
-
-# Function to copy the selected font to the clipboard
-def copy_to_clipboard():
-    selected_font = all_fonts[current_font_index]
-    root.clipboard_clear()
-    root.clipboard_append(selected_font)
-
-# Create a tkinter Label to display text with different fonts
-text_label = tk.Label(root, text="Sample Text", font=("Arial", 20))  # Default font for sample text
-text_label.pack()
-
-# Button to navigate to the previous font
-prev_button = tk.Button(root, text="Previous", command=previous_font)
-prev_button.pack(side=tk.LEFT, padx=5)
-
-# Button to navigate to the next font
-next_button = tk.Button(root, text="Next", command=next_font)
-next_button.pack(side=tk.LEFT, padx=5)
-
-# Button to copy the displayed font to clipboard
-copy_button = tk.Button(root, text="Copy to Clipboard", command=copy_to_clipboard)
-copy_button.pack(side=tk.RIGHT, padx=5)
-
-# Display the initial font
-text_label.config(font=(all_fonts[current_font_index], 20))
-root.clipboard_clear()
-root.clipboard_append(all_fonts[current_font_index])
-
-root.mainloop()
+local_ip = get_local_ip()
+print(f"Local IP Address: {local_ip}")
