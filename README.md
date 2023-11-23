@@ -707,3 +707,16 @@ def get_local_ip():
 
 local_ip = get_local_ip()
 print(f"Local IP Address: {local_ip}")
+
+
+Terminal error from computer:
+Traceback (most recent call last):
+  File "\\CC-SRV-CGDC-FS3\CC_Student_HD\N_Gurung18\Documents\kzj,sdflkjsbfge8.py", line 5, in <module>
+    db = pymysql.connect(
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\N_Gurung18\AppData\Roaming\Python\Python311\site-packages\pymysql\connections.py", line 358, in __init__
+    self.connect()
+  File "C:\Users\N_Gurung18\AppData\Roaming\Python\Python311\site-packages\pymysql\connections.py", line 711, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '172.27.5.132' ([WinError 10061] No connection could be made because the target machine actively refused it)")
+PS Microsoft.PowerShell.Core\FileSystem::\\CC-SRV-CGDC-FS3\CC_Student_HD\N_Gurung18\Documents> 
