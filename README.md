@@ -3,7 +3,7 @@ import string
 import pymysql
 from tkinter import *
 db = pymysql.connect(
-    host = '192.168.0.51',
+    host = 'localhost',
     user = 'root',
     password = 'root',
     database = 'game_db')
@@ -16,18 +16,20 @@ holding_username = ''
 def clear_box(box_type , button_name):
         box_type['text'] = ''
         button_name['state'] = 'normal'
-def center_window(window_name):
+def center_window(window_name=Tk):
     screen_width = int((window_name.winfo_screenwidth()) / 2 - 375)
     screen_height = int((window_name.winfo_screenheight()) / 2 - 250)
     window_name.geometry(f'700x500+{screen_width}+{screen_height}')
 def login_system():
     def register():
+        global root
         window.destroy()
         root = Tk()
         center_window(root)
         change = False
         question_number = 0
         def next():
+            global hold_first_name , hold_password , hold_last_name
             nonlocal change , question_number
             if question_number == 0:
                 first_name = place_holder_box.get()
@@ -138,7 +140,7 @@ def login_system():
         place_holder_label2.pack(pady=10)
         place_holder_box2 = Entry()
         place_holder_box2.pack()
-        button = Button(text = 'Enter' , command = next , font = 24)
+        button = Button(text = 'Enter' , command = next , font = ('Microsoft JhengHei UI',13))
         button.pack(pady=10)
         error_message = Message(text = '' , fg = 'red' , font = 24 , width = 450)
         error_message.pack()
@@ -155,7 +157,7 @@ def login_system():
             center_window(real)
             label = Label(real,text = 'An account has been created!' , font = 24)
             label.pack()
-            button = Button(real, text = 'Go to login page' , command = login_page , font = 24 , width = 20)
+            button = Button(real, text = 'Go to login page' , command = login_page , font = ('Microsoft JhengHei UI',13) , width = 20)
             button.pack(pady=20)
             real.resizable(False,False)
             real.protocol('WM_DELETE_WINDOW', False)
@@ -189,7 +191,6 @@ def login_system():
                 else:
                     global holding_username
                     holding_username = username
-                    print(holding_username)
                     master.destroy()
             def forgot():
                 master.destroy()
@@ -230,7 +231,7 @@ def login_system():
                 email_entry.pack()
                 email_box = Message(text = '' , font = 24 , fg = 'red' , width = 350)
                 email_box.pack()
-                button = Button(text = 'Enter' , font = 24,command = forgot_check)
+                button = Button(text = 'Enter' , font = ('Microsoft JhengHei UI',13) , command = forgot_check)
                 button.pack(pady=10)
                 new_master.resizable(False,False)
                 new_master.protocol('WM_DELETE_WINDOW', False)
@@ -247,11 +248,11 @@ def login_system():
             password_label.pack(pady=10)
             password_entry = Entry()
             password_entry.pack()
-            check_button = Button(text = 'Enter' , command = checking , font = 24 , width = 10)
+            check_button = Button(text = 'Enter' , command = checking , font = ('Microsoft JhengHei UI',13) , width = 10)
             check_button.pack(pady=10)
             error_message = Message(text = '' , font = 24 , fg = 'red' , width = 550)
             error_message.pack()
-            forgot_button = Button(text = 'Forgot Password' , command = forgot , font = 24 , width = 20)
+            forgot_button = Button(text = 'Forgot Password' , command = forgot , font = ('Microsoft JhengHei UI',13) , width = 20)
             forgot_button.pack(pady=10)
             master.resizable(False,False)
             master.protocol('WM_DELETE_WINDOW', False)
@@ -262,9 +263,9 @@ def login_system():
     label1.pack(padx=10,pady=10)
     label2 = Label(window, text = 'Would you like to login or register?' , font = 24)
     label2.pack(padx=10,pady=40)
-    register_button = Button(text = 'Register' , font = 24 , width = 10 , command=register)
+    register_button = Button(text = 'Register' , font = ('Microsoft JhengHei UI',13) , width = 10 , command=register)
     register_button.place(x = 200 , y = 150)
-    login_button = Button(text = 'Login' , font = 24 , width = 10 , command=login_page)
+    login_button = Button(text = 'Login' , font = ('Microsoft JhengHei UI',13) , width = 10 , command=login_page)
     login_button.place(x = 400 , y = 150)
     window.resizable(False,False)
     window.protocol('WM_DELETE_WINDOW', False)
@@ -414,9 +415,9 @@ def easy_game_UI():
     button = Button(text = 'Enter', font = ('Microsoft JhengHei UI',13) , command = checker)
     button.pack()
     point_box = Message(text = f'Points: {points}' , font =  ('Comic Sans MS',14)  , width = 350)
-    point_box.place(x = 250 , y = 220)
+    point_box.place(x = 250 , y = 230)
     lives_box = Message(text = f'Lives: {lives}' , font =  ('Comic Sans MS',14) , width = 350)
-    lives_box.place(x = 350 , y = 220)
+    lives_box.place(x = 350 , y = 230)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
     easy_game.resizable(False,False)
@@ -498,9 +499,9 @@ def medium_game_UI():
     button = Button(text = 'Enter', font = ('Microsoft JhengHei UI',13) , command = checker)
     button.pack()
     point_box = Message(text = f'Points: {points}' , font = ('Comic Sans MS',14) , width = 350)
-    point_box.place(x = 250 , y = 220)
+    point_box.place(x = 250 , y = 230)
     lives_box = Message(text = f'Lives: {lives}' , font = ('Comic Sans MS',14) , width = 350)
-    lives_box.place(x = 350 , y = 220)
+    lives_box.place(x = 350 , y = 230)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
     medium_game.resizable(False,False)
@@ -582,9 +583,9 @@ def hard_game_UI():
     button = Button(text = 'Enter', font = ('Microsoft JhengHei UI',13) , command = checker)
     button.pack()
     point_box = Message(text = f'Points: {points}' , font = ('Comic Sans MS',14) , width = 350)
-    point_box.place(x = 250 , y = 220)
+    point_box.place(x = 250 , y = 230)
     lives_box = Message(text = f'Lives: {lives}' , font = ('Comic Sans MS',14) , width = 350)
-    lives_box.place(x = 350 , y = 220)
+    lives_box.place(x = 350 , y = 230)
     quit_button = Button(text = 'Quit Game' , font = ('Microsoft JhengHei UI',13) , command = quit_game)
     quit_button.place(x = 600, y = 468)
     hard_game.resizable(False,False)
@@ -599,9 +600,8 @@ def game_over_screen():
     cursor.execute(f'SELECT best_point , best_points_difficulty FROM user_info WHERE username = "{holding_username}"')
     for i in cursor:
         user_personal_best.append(i)
-    print(user_personal_best)
     if user_personal_best[0][0] < points:
-        cursor.execute(f'UPDATE user_info SET best_point = {points} , best_points_difficulty = "{difficulty_lst[difficulty-1]}" WHERE username = {holding_username}')
+        cursor.execute(f'UPDATE user_info SET best_point = {points} , best_points_difficulty = "{difficulty_lst[difficulty-1]}" WHERE username = "{holding_username}"')
         db.commit()
     label = Label(text = 'GAME OVER!' , fg = 'red' , width = 50 , font =  ('System' , 24))
     label.pack()
@@ -630,24 +630,27 @@ def game_over_screen():
     game_over.mainloop()
 def display_lb():
     global holding_username
+    holding_username = 'Aurora'
     position = 0
+    def leave_program():
+        quit()
     def shift_lb():
         nonlocal position
         position += 1
         if position == 3:
             position = 0
         if position == 0:
-            first_place['text'] = f'{hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty'
-            second_place['text'] = f'{hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty'
-            third_place['text'] = f'{hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty'
+            first_place['text'] = f'🏆🥇 {hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty'
+            second_place['text'] = f'🏆🥈 {hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty'
+            third_place['text'] = f'🏆🥉 {hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty'
         elif position == 1:
-            first_place['text'] = f'{medium_lb[0][0]} scored {medium_lb[0][1]} in {medium_lb[0][2]} difficulty'
-            second_place['text'] = f'{medium_lb[1][0]} scored {medium_lb[1][1]} in {medium_lb[1][2]} difficulty'
-            third_place['text'] = f'{medium_lb[2][0]} scored {medium_lb[2][1]} in {medium_lb[2][2]} difficulty'
+            first_place['text'] = f'🏆🥇 {medium_lb[0][0]} scored {medium_lb[0][1]} in {medium_lb[0][2]} difficulty'
+            second_place['text'] = f'🏆🥈 {medium_lb[1][0]} scored {medium_lb[1][1]} in {medium_lb[1][2]} difficulty'
+            third_place['text'] = f'🏆🥉 {medium_lb[2][0]} scored {medium_lb[2][1]} in {medium_lb[2][2]} difficulty'
         elif position == 2:
-            first_place['text'] = f'{easy_lb[0][0]} scored {easy_lb[0][1]} in {easy_lb[0][2]} difficulty'
-            second_place['text'] = f'{easy_lb[1][0]} scored {easy_lb[1][1]} in {easy_lb[1][2]} difficulty'
-            third_place['text'] = f'{easy_lb[2][0]} scored {easy_lb[2][1]} in {easy_lb[2][2]} difficulty'
+            first_place['text'] = f'🏆🥇 {easy_lb[0][0]} scored {easy_lb[0][1]} in {easy_lb[0][2]} difficulty'
+            second_place['text'] = f'🏆🥈 {easy_lb[1][0]} scored {easy_lb[1][1]} in {easy_lb[1][2]} difficulty'
+            third_place['text'] = f'🏆🥉 {easy_lb[2][0]} scored {easy_lb[2][1]} in {easy_lb[2][2]} difficulty'
     hard_lb = []
     medium_lb = []
     easy_lb = []
@@ -668,13 +671,13 @@ def display_lb():
     cursor.execute(f'SELECT best_point , best_points_difficulty FROM user_info WHERE username = "{holding_username}"')
     for i in cursor:
         user_points.append(i)
-    first_place = Label(text = f'{hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty' , font = 24)
+    first_place = Label(text = f'🏆🥇 {hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty' , font = ('Comic Sans MS',14))
     first_place.pack(pady=10)
-    second_place = Label(text = f'{hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty' , font = 24)
+    second_place = Label(text = f'🏆🥈 {hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty' , font = ('Comic Sans MS',14))
     second_place.pack(pady=10)
-    third_place = Label(text = f'{hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty' , font = 24)
+    third_place = Label(text = f'🏆🥉 {hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty' , font = ('Comic Sans MS',14))
     third_place.pack(pady=10)
-    button = Button(text = 'Next' , command = shift_lb)
+    button = Button(text = 'Next' , font = ('Microsoft JhengHei UI',13), command = shift_lb)
     button.pack(pady=10)
     if user_points[0][1] == None:
         msg = f'No personal best record'
@@ -682,6 +685,8 @@ def display_lb():
         msg = f'Personal best is {user_points[0][0]} in {user_points[0][1]} difficulty'
     user_best = Label(text = f'{msg}' , font = 24)
     user_best.pack(pady=10)
+    leave = Button(text = 'Quit' , font = ('Microsoft JhengHei UI',13) , command = leave_program)
+    leave.place(x= 652 , y = 468)
     leaderboard.resizable(False,False)
     leaderboard.protocol('WM_DELETE_WINDOW', False)
     leaderboard.mainloop()
@@ -694,29 +699,3 @@ def main_game():
     game_difficulty_choice()
 
 main_game()
-
-
-----------------------------------------------------------------------------------(To get Ip)
-
-import socket
-
-def get_local_ip():
-    hostname = socket.gethostname()
-    ip_address = socket.gethostbyname(hostname)
-    return ip_address
-
-local_ip = get_local_ip()
-print(f"Local IP Address: {local_ip}")
-
-
-Terminal error from computer:
-Traceback (most recent call last):
-  File "\\CC-SRV-CGDC-FS3\CC_Student_HD\N_Gurung18\Documents\kzj,sdflkjsbfge8.py", line 5, in <module>
-    db = pymysql.connect(
-         ^^^^^^^^^^^^^^^^
-  File "C:\Users\N_Gurung18\AppData\Roaming\Python\Python311\site-packages\pymysql\connections.py", line 358, in __init__
-    self.connect()
-  File "C:\Users\N_Gurung18\AppData\Roaming\Python\Python311\site-packages\pymysql\connections.py", line 711, in connect
-    raise exc
-pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '172.27.5.132' ([WinError 10061] No connection could be made because the target machine actively refused it)")
-PS Microsoft.PowerShell.Core\FileSystem::\\CC-SRV-CGDC-FS3\CC_Student_HD\N_Gurung18\Documents> 
