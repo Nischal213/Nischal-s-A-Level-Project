@@ -924,3 +924,31 @@ def main_game():
 
 
 main_game()
+
+
+
+
+---------------------------(different code)
+class list_functions:
+    def __init__(self, lst):
+        self.lst = lst
+
+    def remove_duplicates(self):
+        new_lst = []
+        for i in self.lst:
+            if i not in new_lst:
+                new_lst.append(i)
+        return new_lst
+
+    def sum_lst(self):
+        if len(self.lst) == 0:
+            return 0
+        else:
+            return self.lst[0] + self.sum_lst(self.lst[1:])  # Use self.sum_lst() for recursion
+
+lst = [1, 2, 2, 3, 4, 4, 5]
+lst_func = list_functions(lst)
+unique_func = lst_func.remove_duplicates()
+sum_of_lst = lst_func.sum_lst()  # Call sum_lst() without any arguments
+print(f'Unique list: {unique_func}\nSum of list: {sum_of_lst}')
+
