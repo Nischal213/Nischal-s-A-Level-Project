@@ -160,6 +160,8 @@ def authenticate_user():
                         direct_to_login()
 
         def previous_page():
+            global window_destroyed
+            window_destroyed = False
             root.destroy()
             authenticate_user()
         label = Label(text='Register Page', font=24)
@@ -182,7 +184,8 @@ def authenticate_user():
         email_error_box = Message(text='', font=24, fg='red', width=550)
         email_error_box.place(x=420, y=128)
         back_to_register = Button(
-            text='← Back', command=previous_page, font=('Microsoft JhengHei UI', 13))
+            text='← Back', command=previous_page, font=(
+                'Microsoft JhengHei UI', 13))
         back_to_register.place(x=0, y=0)
         root.resizable(False, False)
         root.protocol('WM_DELETE_WINDOW', False)
@@ -197,8 +200,14 @@ def authenticate_user():
             login_page()
         label = Label(real, text='An account has been created!', font=24)
         label.pack()
-        button = Button(real, text='Go to login page', command=to_login_page, font=(
-            'Microsoft JhengHei UI', 13), width=20)
+        button = Button(
+            real,
+            text='Go to login page',
+            command=to_login_page,
+            font=(
+                'Microsoft JhengHei UI',
+                13),
+            width=20)
         button.pack(pady=20)
         real.resizable(False, False)
         real.protocol('WM_DELETE_WINDOW', False)
@@ -235,7 +244,7 @@ def authenticate_user():
                 holding_username = username
                 master.destroy()
 
-        def forgot_account():  # Make sure to come back to this as this needs to be worked on
+        def forgot_account():
             master.destroy()
 
             def forgot_account_verification():
@@ -261,8 +270,26 @@ def authenticate_user():
                     new_master.after(2000, custom_clear_box)
                 else:
                     new_master.destroy()
+                    contact = Tk()
+
+                    def leave_program():
+                        quit()
+                    center_window(contact)
+                    label = Label(text='Contact Page', font=24)
+                    label.pack()
+                    support = Label(
+                        text='Contact us here at 07855609342', font=24)
+                    support.pack(pady=20)
+                    contact.resizable(False, False)
+                    contact.protocol('WM_DELETE_WINDOW', False)
+                    leave = Button(text='Quit', font=(
+                        'Microsoft JhengHei UI', 13), command=leave_program)
+                    leave.place(x=652, y=468)
+                    contact.mainloop()
 
             def previous_page():
+                global window_destroyed
+                window_destroyed = False
                 new_master.destroy()
                 authenticate_user()
             new_master = Tk()
@@ -281,17 +308,24 @@ def authenticate_user():
             email_entry.pack()
             email_box = Message(text='', font=24, fg='red', width=350)
             email_box.pack()
-            button = Button(text='Enter', font=(
-                'Microsoft JhengHei UI', 13), command=forgot_account_verification)
+            button = Button(
+                text='Enter',
+                font=(
+                    'Microsoft JhengHei UI',
+                    13),
+                command=forgot_account_verification)
             button.pack(pady=10)
             back_to_login = Button(
-                text='← Back', command=previous_page, font=('Microsoft JhengHei UI', 13))
+                text='← Back', command=previous_page, font=(
+                    'Microsoft JhengHei UI', 13))
             back_to_login.place(x=0, y=0)
             new_master.resizable(False, False)
             new_master.protocol('WM_DELETE_WINDOW', False)
             new_master.mainloop()
 
         def previous_page():
+            global window_destroyed
+            window_destroyed = False
             master.destroy()
             authenticate_user()
         master = Tk()
@@ -306,16 +340,23 @@ def authenticate_user():
         password_label.pack(pady=10)
         password_entry = Entry()
         password_entry.pack()
-        check_button = Button(text='Enter', command=account_verification, font=(
-            'Microsoft JhengHei UI', 13), width=10)
+        check_button = Button(
+            text='Enter', command=account_verification, font=(
+                'Microsoft JhengHei UI', 13), width=10)
         check_button.pack(pady=10)
         error_message = Message(text='', font=24, fg='red', width=550)
         error_message.pack()
         back_to_register = Button(
-            text='← Back', command=previous_page, font=('Microsoft JhengHei UI', 13))
+            text='← Back', command=previous_page, font=(
+                'Microsoft JhengHei UI', 13))
         back_to_register.place(x=0, y=0)
-        forgot_button = Button(text='Forgot Password', command=forgot_account, font=(
-            'Microsoft JhengHei UI', 13), width=15)
+        forgot_button = Button(
+            text='Forgot Password',
+            command=forgot_account,
+            font=(
+                'Microsoft JhengHei UI',
+                13),
+            width=15)
         forgot_button.pack(pady=10)
         master.resizable(False, False)
         master.protocol('WM_DELETE_WINDOW', False)
@@ -371,41 +412,78 @@ def previous_game_page():
     game_difficulty_choice()
 
 
-def get_answer(num1, rand_op, num2):
-    if rand_op == '+':
-        correct_ans = num1 + num2
-    elif rand_op == '-':
-        correct_ans = num1 - num2
-    elif rand_op == 'x':
-        correct_ans = num1 * num2
+def get_answer(num1, rand_op, num2, algebra=False, num3=None):
+    if not (algebra):
+        if rand_op == '+':
+            correct_ans = num1 + num2
+        elif rand_op == '-':
+            correct_ans = num1 - num2
+        elif rand_op == 'x':
+            correct_ans = num1 * num2
+        else:
+            correct_ans = round((num1 / num2), 1)
+        return correct_ans
     else:
-        correct_ans = round((num1 / num2), 1)
-    return correct_ans
+        index = op_lst.index(rand_op)
+        if index % 2 == 0:
+            index += 1
+        else:
+            index -= 1
+        if index == 3:
+            changed_op = '*'
+        else:
+            changed_op = op_lst[index]
+        correct_ans = eval(f'( {num3} {changed_op} {num2} ) / {num1}')
+        if eval(f'{num3} {changed_op} {num2}') % num1 == 0:
+            return int(correct_ans)
+        else:
+            return round(correct_ans, 1)
 
 
 def create_rand_questions(difficulty):
-    def generate_rand_nums(difficulty):
-        max_num = '1' + '0' * difficulty
-        num1, num2 = random.randint(
-            1, int(max_num)), random.randint(1, int(max_num))
-        rand_op = random.choice(op_lst)
-        return num1, rand_op, num2
+    def generate_rand_nums(store_difficulty):
+        if store_difficulty == 3:
+            store_difficulty = 1
+        max_num = '1' + '0' * store_difficulty
+        if difficulty != 3:
+            num1, num2 = random.randint(
+                1, int(max_num)), random.randint(1, int(max_num))
+            rand_op = random.choice(op_lst)
+            return num1, rand_op, num2
+        else:
+            num1, num2, num3 = random.randint(
+                1, int(max_num)), random.randint(
+                1, int(max_num)), random.randint(
+                1, int(max_num))
+            rand_op = random.choice(op_lst)
+            return num1, rand_op, num2, num3
     num_lst = []
     counter = 0
-    if difficulty in [2, 3]:
+    store_difficulty = difficulty
+    algebra = False
+    if difficulty == 3:
+        algebra = True
+    if difficulty == 2:
         counter = difficulty * 2
     lst_length = len(num_lst)
     while counter != 0:
-        num1, rand_op, num2 = generate_rand_nums(difficulty)
-        results = get_answer(num1, rand_op, num2)
+        num1, rand_op, num2 = generate_rand_nums(store_difficulty)
+        results = get_answer(num1, rand_op, num2, algebra)
         if isinstance(results, float):
             float_ans = (num1, rand_op, num2)
             num_lst.append(float_ans)
             lst_length += 1
             counter -= 1
+    if algebra:
+        for i in range(10):
+            num1, rand_op, num2, num3 = generate_rand_nums(store_difficulty)
+            ans = get_answer(num1, rand_op, num2, algebra, num3)
+            question = (num1, rand_op, num2, num3, ans)
+            num_lst.append(question)
+            lst_length += 1
     while lst_length != 10:
         num1, rand_op, num2 = generate_rand_nums(difficulty)
-        results = get_answer(num1, rand_op, num2)
+        results = get_answer(num1, rand_op, num2, algebra)
         if isinstance(results, int):
             int_ans = (num1, rand_op, num2)
             num_lst.append(int_ans)
@@ -428,11 +506,18 @@ def remove_lives_box_animation(lives_box, output_box, button, window_name=Tk):
     window_name.after(1000, clear_box, output_box, button)
 
 
-def choose_rand_questions(num_lst=list):
-    random_tuple = random.choice(num_lst)
-    num_lst.remove(random_tuple)
-    num1, rand_op, num2 = random_tuple[0], random_tuple[1], random_tuple[2]
-    return num1, rand_op, num2
+def choose_rand_questions(num_lst=list, algebra=False):
+    if not (algebra):
+        random_tuple = random.choice(num_lst)
+        num_lst.remove(random_tuple)
+        num1, rand_op, num2 = random_tuple[0], random_tuple[1], random_tuple[2]
+        return num1, rand_op, num2
+    else:
+        random_tuple = random.choice(num_lst)
+        num_lst.remove(random_tuple)
+        num1, rand_op, num2, num3, ans = random_tuple[0], random_tuple[
+            1], random_tuple[2], random_tuple[3], random_tuple[4]
+        return num1, rand_op, num2, num3, ans
 
 
 def game_difficulty_choice():
@@ -453,13 +538,13 @@ def game_difficulty_choice():
         game.destroy()
         hard_difficulty()
     easy_button = Button(text='Easy', font=(
-        'Microsoft JhengHei UI', 13), width=10, command=easy)
+        'Microsoft JhengHei UI', 13), width=10, fg='green', command=easy)
     easy_button.pack(pady=10)
     medium_button = Button(text='Medium', font=(
-        'Microsoft JhengHei UI', 13), width=10, command=medium)
+        'Microsoft JhengHei UI', 13), width=10, fg='orange', command=medium)
     medium_button.pack(pady=10)
     hard_button = Button(text='Hard', font=(
-        'Microsoft JhengHei UI', 13), width=10, command=hard)
+        'Microsoft JhengHei UI', 13), width=10, fg='red', command=hard)
     hard_button.pack(pady=10)
     game.resizable(False, False)
     game.protocol('WM_DELETE_WINDOW', False)
@@ -504,11 +589,14 @@ def easy_difficulty():
                 answer_box.delete(0, END)
                 lives -= 1
                 output_box['text'] = 'Incorrect!'
+
                 output_box['fg'] = 'red'
                 lives_box['text'] = '-1'
                 lives_box['fg'] = 'red'
                 remove_lives_box_animation(
                     lives_box, output_box, button, easy_game)
+            if back_to_game_choice:
+                back_to_game_choice.destroy()
             if lst_length == 0:
                 lst_length = 10
                 num_lst = create_rand_questions(difficulty)
@@ -561,7 +649,8 @@ def easy_difficulty():
         'Microsoft JhengHei UI', 13), command=quit_game)
     quit_button.place(x=600, y=468)
     back_to_game_choice = Button(
-        text='← Back', command=previous_page, font=('Microsoft JhengHei UI', 13))
+        text='← Back', command=previous_page, font=(
+            'Microsoft JhengHei UI', 13))
     back_to_game_choice.place(x=0, y=0)
     easy_game.resizable(False, False)
     easy_game.protocol('WM_DELETE_WINDOW', False)
@@ -614,6 +703,8 @@ def medium_difficulty():
                 lives_box['fg'] = 'red'
                 remove_lives_box_animation(
                     lives_box, output_box, button, medium_game)
+            if back_to_game_choice:
+                back_to_game_choice.destroy()
             if lst_length == 0:
                 lst_length = 10
                 num_lst = create_rand_questions(difficulty)
@@ -674,7 +765,8 @@ def medium_difficulty():
         'Microsoft JhengHei UI', 13), command=quit_game)
     quit_button.place(x=600, y=468)
     back_to_game_choice = Button(
-        text='← Back', command=previous_page, font=('Microsoft JhengHei UI', 13))
+        text='← Back', command=previous_page, font=(
+            'Microsoft JhengHei UI', 13))
     back_to_game_choice.place(x=0, y=0)
     medium_game.resizable(False, False)
     medium_game.protocol('WM_DELETE_WINDOW', False)
@@ -688,26 +780,16 @@ def hard_difficulty():
     hard_game = Tk()
     center_window(hard_game)
     num_lst = create_rand_questions(difficulty)
-    num1, rand_op, num2 = choose_rand_questions(num_lst)
+    num1, rand_op, num2, num3, ans = choose_rand_questions(num_lst, True)
     lst_length -= 1
-    result = get_answer(num1, rand_op, num2)
 
     def answer_checker():
         global lst_length, points, lives, difficulty
-        nonlocal num1, rand_op, num2, num_lst
+        nonlocal num1, rand_op, num2, num3, ans, num_lst
         user_ans = answer_box.get()
-        if user_ans.count('-') == 1:
-            negative_answer = True
-            user_ans = user_ans[1:]
-        else:
-            negative_answer = False
         if valid_input_only(user_ans):
             user_ans = round(float(user_ans), 1)
-            if negative_answer:
-                user_ans = '-' + str(user_ans)
-                user_ans = float(user_ans)
-            correct_ans = round(float(get_answer(num1, rand_op, num2)), 1)
-            if user_ans == correct_ans:
+            if user_ans == float(ans):
                 button['state'] = 'disabled'
                 answer_box.delete(0, END)
                 points += 1
@@ -727,22 +809,26 @@ def hard_difficulty():
                 lives_box['fg'] = 'red'
                 remove_lives_box_animation(
                     lives_box, output_box, button, hard_game)
+            if back_to_game_choice:
+                back_to_game_choice.destroy()
             if lst_length == 0:
                 lst_length = 10
                 num_lst = create_rand_questions(difficulty)
-                num1, rand_op, num2 = choose_rand_questions(num_lst)
+                num1, rand_op, num2, num3, ans = choose_rand_questions(
+                    num_lst, True)
                 lst_length -= 1
             elif lives != 0 and lst_length != 0:
-                num1, rand_op, num2 = choose_rand_questions(num_lst)
+                num1, rand_op, num2, num3, ans = choose_rand_questions(
+                    num_lst, True)
                 lst_length -= 1
-            next_question_answer = get_answer(num1, rand_op, num2)
+            next_question_answer = ans
             if lives == 0:
                 hard_game.destroy()
                 game_over_screen()
             if isinstance(next_question_answer, float):
-                question_box['text'] = f'What is {num1} {rand_op} {num2} to 1 d.p?'
+                question_box['text'] = f'Find y to 1 d.p: {num1}y {rand_op} {num2} = {num3}'
             else:
-                question_box['text'] = f'What is {num1} {rand_op} {num2}?'
+                question_box['text'] = f'Find y: {num1}y {rand_op} {num2} = {num3}'
         else:
             button['state'] = 'disabled'
             output_box['text'] = 'Invalid Input!'
@@ -763,10 +849,10 @@ def hard_difficulty():
         previous_game_page()
     label = Label(text='Hard Difficulty', font=('Helvatical Bold', 15))
     label.pack()
-    if isinstance(result, float):
-        question_msg = f'What is {num1} {rand_op} {num2} to 1 d.p?'
+    if isinstance(ans, float):
+        question_msg = f'Find y to 1 d.p: {num1}y {rand_op} {num2} = {num3}'
     else:
-        question_msg = f'What is {num1} {rand_op} {num2}?'
+        question_msg = f'Find y: {num1}y {rand_op} {num2} = {num3}'
     question_box = Message(text=f'{question_msg}', font=(
         'Comic Sans MS', 17), width=350)
     question_box.pack(pady=20)
@@ -787,7 +873,8 @@ def hard_difficulty():
         'Microsoft JhengHei UI', 13), command=quit_game)
     quit_button.place(x=600, y=468)
     back_to_game_choice = Button(
-        text='← Back', command=previous_page, font=('Microsoft JhengHei UI', 13))
+        text='← Back', command=previous_page, font=(
+            'Microsoft JhengHei UI', 13))
     back_to_game_choice.place(x=0, y=0)
     hard_game.resizable(False, False)
     hard_game.protocol('WM_DELETE_WINDOW', False)
@@ -811,7 +898,11 @@ def game_over_screen():
     label = Label(text='GAME OVER!', fg='red', width=50, font=('System', 24))
     label.pack()
     label2 = Label(
-        text=f'You scored {points} in {difficulty_lst[difficulty-1]} difficulty', font=('Comic Sans MS', 14), width=350)
+        text=f'You scored {points} in {difficulty_lst[difficulty-1]} difficulty',
+        font=(
+            'Comic Sans MS',
+            14),
+        width=350)
     label2.pack(pady=20)
 
     def retry_button():
@@ -844,28 +935,24 @@ def game_over_screen():
 
 def display_lb():
     global holding_username
-    position = 0
 
     def leave_program():
         quit()
 
-    def shift_lb():
-        nonlocal position
-        position += 1
-        if position == 3:
-            position = 0
-        if position == 0:
-            first_place['text'] = f'🏆🥇 {hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty'
-            second_place['text'] = f'🏆🥈 {hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty'
-            third_place['text'] = f'🏆🥉 {hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty'
-        elif position == 1:
-            first_place['text'] = f'🏆🥇 {medium_lb[0][0]} scored {medium_lb[0][1]} in {medium_lb[0][2]} difficulty'
-            second_place['text'] = f'🏆🥈 {medium_lb[1][0]} scored {medium_lb[1][1]} in {medium_lb[1][2]} difficulty'
-            third_place['text'] = f'🏆🥉 {medium_lb[2][0]} scored {medium_lb[2][1]} in {medium_lb[2][2]} difficulty'
-        elif position == 2:
-            first_place['text'] = f'🏆🥇 {easy_lb[0][0]} scored {easy_lb[0][1]} in {easy_lb[0][2]} difficulty'
-            second_place['text'] = f'🏆🥈 {easy_lb[1][0]} scored {easy_lb[1][1]} in {easy_lb[1][2]} difficulty'
-            third_place['text'] = f'🏆🥉 {easy_lb[2][0]} scored {easy_lb[2][1]} in {easy_lb[2][2]} difficulty'
+    def shift_lb_easy():
+        first_place['text'] = f'🏆🥇 {easy_lb[0][0]} scored {easy_lb[0][1]} in {easy_lb[0][2]} difficulty'
+        second_place['text'] = f'🏆🥈 {easy_lb[1][0]} scored {easy_lb[1][1]} in {easy_lb[1][2]} difficulty'
+        third_place['text'] = f'🏆🥉 {easy_lb[2][0]} scored {easy_lb[2][1]} in {easy_lb[2][2]} difficulty'
+
+    def shift_lb_medium():
+        first_place['text'] = f'🏆🥇 {medium_lb[0][0]} scored {medium_lb[0][1]} in {medium_lb[0][2]} difficulty'
+        second_place['text'] = f'🏆🥈 {medium_lb[1][0]} scored {medium_lb[1][1]} in {medium_lb[1][2]} difficulty'
+        third_place['text'] = f'🏆🥉 {medium_lb[2][0]} scored {medium_lb[2][1]} in {medium_lb[2][2]} difficulty'
+
+    def shift_lb_hard():
+        first_place['text'] = f'🏆🥇 {hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty'
+        second_place['text'] = f'🏆🥈 {hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty'
+        third_place['text'] = f'🏆🥉 {hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty'
     hard_lb = []
     medium_lb = []
     easy_lb = []
@@ -891,23 +978,38 @@ def display_lb():
     for i in cursor:
         user_points.append(i)
     first_place = Label(
-        text=f'🏆🥇 {hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty', font=('Comic Sans MS', 14))
+        text=f'🏆🥇 {hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty',
+        font=(
+            'Comic Sans MS',
+            14))
     first_place.pack(pady=10)
     second_place = Label(
-        text=f'🏆🥈 {hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty', font=('Comic Sans MS', 14))
+        text=f'🏆🥈 {hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty',
+        font=(
+            'Comic Sans MS',
+            14))
     second_place.pack(pady=10)
     third_place = Label(
-        text=f'🏆🥉 {hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty', font=('Comic Sans MS', 14))
+        text=f'🏆🥉 {hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty',
+        font=(
+            'Comic Sans MS',
+            14))
     third_place.pack(pady=10)
-    button = Button(text='Next', font=(
-        'Microsoft JhengHei UI', 13), command=shift_lb)
-    button.pack(pady=10)
+    display_medium = Button(text='Medium', font=(
+        'Microsoft JhengHei UI', 13), fg = 'orange' , command=shift_lb_medium)
+    display_medium.place(x=300, y=195)
+    display_hard = Button(text='Hard', font=(
+        'Microsoft JhengHei UI', 13), fg = 'red' , command=shift_lb_hard)
+    display_hard.place(x=225, y=195)
+    display_easy = Button(text='Easy', font=(
+        'Microsoft JhengHei UI', 13), fg = 'green' , command=shift_lb_easy)
+    display_easy.place(x=400, y=195)
     if user_points[0][1] is None:
         msg = f'No personal best record'
     else:
         msg = f'Personal best is {user_points[0][0]} in {user_points[0][1]} difficulty'
     user_best = Label(text=f'{msg}', font=24)
-    user_best.pack(pady=10)
+    user_best.pack(pady=60)
     leave = Button(text='Quit', font=(
         'Microsoft JhengHei UI', 13), command=leave_program)
     leave.place(x=652, y=468)
@@ -922,33 +1024,5 @@ def main_game():
     authenticate_user()
     game_difficulty_choice()
 
-
-main_game()
-
-
-
-
----------------------------(different code)
-class list_functions:
-    def __init__(self, lst):
-        self.lst = lst
-
-    def remove_duplicates(self):
-        new_lst = []
-        for i in self.lst:
-            if i not in new_lst:
-                new_lst.append(i)
-        return new_lst
-
-    def sum_lst(self):
-        if len(self.lst) == 0:
-            return 0
-        else:
-            return self.lst[0] + self.sum_lst(self.lst[1:])  # Use self.sum_lst() for recursion
-
-lst = [1, 2, 2, 3, 4, 4, 5]
-lst_func = list_functions(lst)
-unique_func = lst_func.remove_duplicates()
-sum_of_lst = lst_func.sum_lst()  # Call sum_lst() without any arguments
-print(f'Unique list: {unique_func}\nSum of list: {sum_of_lst}')
-
+   
+hard_difficulty()
