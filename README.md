@@ -18,7 +18,11 @@ def clear_box(box_type, button_name):
     button_name['state'] = 'normal'
 
 
-def center_window(window_name=Tk):
+def customize_window(window_name=Tk):
+    window_name.title("Nischal's A-level project")
+    window_name.resizable(False, False)
+    window_name.protocol('WM_DELETE_WINDOW', False)
+    window_name['bg'] = 'light blue'
     screen_width = int((window_name.winfo_screenwidth()) / 2 - 375)
     screen_height = int((window_name.winfo_screenheight()) / 2 - 250)
     window_name.geometry(f'700x500+{screen_width}+{screen_height}')
@@ -33,7 +37,7 @@ def authenticate_user():
         window.destroy()
         window_destroyed = True
         root = Tk()
-        center_window(root)
+        customize_window(root)
         change = False
         question_number = 0
 
@@ -45,7 +49,7 @@ def authenticate_user():
                 last_name = place_holder_box2.get()
                 if first_name == '' or last_name == '':
                     change = True
-                    error_string = 'Cannot be blank'
+                    error_string = 'Name cannot be blank'
                 elif not (first_name.isalpha()) or not (last_name.isalpha()):
                     change = True
                     error_string = 'Name cannot contain special chars'
@@ -92,8 +96,6 @@ def authenticate_user():
                             return True
                     else:
                         return False
-
-                # Go over this with huzaifa to check for any improvements
                 def email_validator(str):
                     if has_special_chars(str):
                         if str.count('.') != 0 and str.count('@') == 1:
@@ -164,53 +166,48 @@ def authenticate_user():
             window_destroyed = False
             root.destroy()
             authenticate_user()
-        label = Label(text='Register Page', font=24)
+        label = Label(text='Register Page', font=('Comic Sans MS' , 16) , bg = 'light blue')
         label.pack()
-        place_holder_label = Label(text='First name:', font=24)
+        place_holder_label = Label(text='First name', font=('Comic Sans MS' , 16) , bg = 'light blue')
         place_holder_label.pack(pady=10)
         place_holder_box = Entry()
         place_holder_box.pack()
-        place_holder_label2 = Label(text='Last name:', font=24)
+        place_holder_label2 = Label(text='Last name', font=('Comic Sans MS' , 16) , bg = 'light blue')
         place_holder_label2.pack(pady=10)
         place_holder_box2 = Entry()
         place_holder_box2.pack()
         button = Button(text='Enter', command=change_questions,
-                        font=('Microsoft JhengHei UI', 13))
+                        font=('Constantia', 13))
         button.pack(pady=10)
-        error_message = Message(text='', fg='red', font=24, width=450)
+        error_message = Message(text='', fg='red', font=('Constantia', 13), width=450 , bg = 'light blue')
         error_message.pack()
-        username_error_box = Message(text='', font=24, fg='red', width=550)
-        username_error_box.place(x=420, y=64)
-        email_error_box = Message(text='', font=24, fg='red', width=550)
-        email_error_box.place(x=420, y=128)
+        username_error_box = Message(text='', font=('Constantia', 13), fg='red', width=550 , bg = 'light blue')
+        username_error_box.place(x=420, y=84)
+        email_error_box = Message(text='', font=('Constantia', 13), fg='red', width=550 , bg = 'light blue')
+        email_error_box.place(x=420, y=158)
         back_to_register = Button(
             text='← Back', command=previous_page, font=(
-                'Microsoft JhengHei UI', 13))
+                'Constantia', 13) , fg = 'blue')
         back_to_register.place(x=0, y=0)
-        root.resizable(False, False)
-        root.protocol('WM_DELETE_WINDOW', False)
         root.mainloop()
 
     def direct_to_login():
         real = Tk()
-        center_window(real)
+        customize_window(real)
 
         def to_login_page():
             real.destroy()
             login_page()
-        label = Label(real, text='An account has been created!', font=24)
+        label = Label(text='An account has been created!', font=('Comic Sans MS' , 16) , bg = 'light blue')
         label.pack()
         button = Button(
-            real,
             text='Go to login page',
             command=to_login_page,
             font=(
-                'Microsoft JhengHei UI',
+                'Constantia',
                 13),
             width=20)
         button.pack(pady=20)
-        real.resizable(False, False)
-        real.protocol('WM_DELETE_WINDOW', False)
         real.mainloop()
 
     def login_page():
@@ -223,6 +220,9 @@ def authenticate_user():
             error_string = ''
             username = username_entry.get()
             password = password_entry.get()
+            def lockdown(box_type , button_name , button_name2 , button_name3):
+                box_type['text'] = ''
+                button_name['state'] , button_name2['state'] , button_name3['state'] = 'normal' , 'normal' , 'normal'
             cursor.execute(
                 f'SELECT username, pass_word FROM user_info WHERE username = "{username}" AND pass_word = "{password}"')
             if cursor.rowcount == 0:
@@ -230,10 +230,12 @@ def authenticate_user():
                 pass_flag = False
             if not (pass_flag) and error_string:
                 if attempt == 6:
-                    attempt = 0
+                    attempt = 1
                     error_message['text'] = 'Too many failed attempts in a row, Temporarily on lockdown for 30 seconds'
                     check_button['state'] = 'disabled'
-                    master.after(30000, clear_box, error_message, check_button)
+                    back_to_register['state'] = 'disabled'
+                    forgot_button['state'] = 'disabled'
+                    master.after(30000, lockdown , error_message, check_button , back_to_register , forgot_button)
                 else:
                     check_button['state'] = 'disabled'
                     error_message['text'] = error_string
@@ -274,53 +276,49 @@ def authenticate_user():
 
                     def leave_program():
                         quit()
-                    center_window(contact)
-                    label = Label(text='Contact Page', font=24)
+                    customize_window(contact)
+                    label = Label(text='Contact Page', font=('Comic Sans MS' , 16) , bg = 'light blue')
                     label.pack()
                     support = Label(
-                        text='Contact us here at 07855609342', font=24)
+                        text='Contact us here at 07855609342', font=('Comic Sans MS' , 16) , bg = 'light blue')
                     support.pack(pady=20)
-                    contact.resizable(False, False)
-                    contact.protocol('WM_DELETE_WINDOW', False)
                     leave = Button(text='Quit', font=(
-                        'Microsoft JhengHei UI', 13), command=leave_program)
-                    leave.place(x=652, y=468)
+                        'Constantia', 13), command=leave_program , width = 7 , fg = 'red')
+                    leave.place(x=621, y=468)
                     contact.mainloop()
 
             def previous_page():
                 global window_destroyed
-                window_destroyed = False
+                window_destroyed = True
                 new_master.destroy()
-                authenticate_user()
+                login_page()
             new_master = Tk()
-            center_window(new_master)
-            label = Label(text='Forgot Page', font=24)
+            customize_window(new_master)
+            label = Label(text='Forgot Page', font=('Comic Sans MS' , 16), bg = 'light blue')
             label.pack()
-            username_label = Label(text='Username', font=24)
+            username_label = Label(text='Username', font=('Comic Sans MS' , 16) , bg = 'light blue')
             username_label.pack(pady=10)
             username_entry = Entry()
             username_entry.pack()
-            username_box = Message(text='', font=24, fg='red', width=350)
+            username_box = Message(text='', font=('Constantia' , 13), fg='red', width=350 , bg = 'light blue')
             username_box.pack()
-            email_label = Label(text='Email', font=24)
+            email_label = Label(text='Email', font=('Comic Sans MS' , 16)  , bg = 'light blue')
             email_label.pack()
             email_entry = Entry()
             email_entry.pack()
-            email_box = Message(text='', font=24, fg='red', width=350)
+            email_box = Message(text='', font=('Constantia' , 13), fg='red', width=350 , bg = 'light blue')
             email_box.pack()
             button = Button(
                 text='Enter',
                 font=(
-                    'Microsoft JhengHei UI',
+                    'Constantia',
                     13),
                 command=forgot_account_verification)
             button.pack(pady=10)
             back_to_login = Button(
                 text='← Back', command=previous_page, font=(
-                    'Microsoft JhengHei UI', 13))
+                    'Microsoft JhengHei UI', 13) , fg = 'blue')
             back_to_login.place(x=0, y=0)
-            new_master.resizable(False, False)
-            new_master.protocol('WM_DELETE_WINDOW', False)
             new_master.mainloop()
 
         def previous_page():
@@ -329,59 +327,55 @@ def authenticate_user():
             master.destroy()
             authenticate_user()
         master = Tk()
-        center_window(master)
-        label = Label(text='Login Page', font=24)
+        customize_window(master)
+        label = Label(text='Login Page', font=('Comic Sans MS' , 16) , bg = 'light blue')
         label.pack()
-        username_label = Label(text='Username:', font=24)
+        username_label = Label(text='Username:', font=('Comic Sans MS' , 16) , bg = 'light blue')
         username_label.pack(pady=10)
         username_entry = Entry()
         username_entry.pack()
-        password_label = Label(master, text='Password:', font=24)
+        password_label = Label(text='Password:', font=('Comic Sans MS' , 16) , bg = 'light blue')
         password_label.pack(pady=10)
         password_entry = Entry()
         password_entry.pack()
         check_button = Button(
             text='Enter', command=account_verification, font=(
-                'Microsoft JhengHei UI', 13), width=10)
+                'Constantia', 13), width=10)
         check_button.pack(pady=10)
-        error_message = Message(text='', font=24, fg='red', width=550)
+        error_message = Message(text='', font=('Constantia' , 13), fg='red', width=550 , bg = 'light blue')
         error_message.pack()
         back_to_register = Button(
             text='← Back', command=previous_page, font=(
-                'Microsoft JhengHei UI', 13))
+                'Constantia', 13) , fg = 'blue')
         back_to_register.place(x=0, y=0)
         forgot_button = Button(
             text='Forgot Password',
             command=forgot_account,
             font=(
-                'Microsoft JhengHei UI',
+                'Constantia',
                 13),
             width=15)
         forgot_button.pack(pady=10)
-        master.resizable(False, False)
-        master.protocol('WM_DELETE_WINDOW', False)
         master.mainloop()
 
     def leave_program():
         quit()
     window = Tk()
-    center_window(window)
-    label1 = Label(window, text='Welcome to my game', font=24)
+    customize_window(window)
+    label1 = Label(text='Welcome to my game', font=('Comic Sans MS' , 16) , bg = 'light blue')
     label1.pack(padx=10, pady=10)
     label2 = Label(
-        window, text='Would you like to login or register?', font=24)
+        text='Would you like to login or register?', font=('Comic Sans MS' , 16) , bg = 'light blue')
     label2.pack(padx=10, pady=40)
     register_button = Button(text='Register', font=(
-        'Microsoft JhengHei UI', 13), width=10, command=registration_page)
+        'Constantia', 13), width=10, command=registration_page)
     register_button.place(x=200, y=150)
     login_button = Button(text='Login', font=(
-        'Microsoft JhengHei UI', 13), width=10, command=login_page)
+        'Constantia', 13), width=10, command=login_page)
     login_button.place(x=400, y=150)
     leave = Button(text='Quit', font=(
-        'Microsoft JhengHei UI', 13), command=leave_program)
-    leave.place(x=652, y=468)
-    window.resizable(False, False)
-    window.protocol('WM_DELETE_WINDOW', False)
+        'Constantia', 13), width=7, command=leave_program , fg = 'red')
+    leave.place(x=621, y=468)
     window.mainloop()
 
 
@@ -522,8 +516,8 @@ def choose_rand_questions(num_lst=list, algebra=False):
 
 def game_difficulty_choice():
     game = Tk()
-    center_window(game)
-    label = Label(text='Select Game Difficulty', font=('Comic Sans MS', 14))
+    customize_window(game)
+    label = Label(text='Select Game Difficulty', font=('Comic Sans MS', 14) , bg = 'light blue')
     label.pack()
 
     def easy():
@@ -538,23 +532,21 @@ def game_difficulty_choice():
         game.destroy()
         hard_difficulty()
     easy_button = Button(text='Easy', font=(
-        'Microsoft JhengHei UI', 13), width=10, fg='green', command=easy)
+        'Constantia', 13), width=10, fg='green', command=easy)
     easy_button.pack(pady=10)
     medium_button = Button(text='Medium', font=(
-        'Microsoft JhengHei UI', 13), width=10, fg='orange', command=medium)
+        'Constantia', 13), width=10, fg='orange', command=medium)
     medium_button.pack(pady=10)
     hard_button = Button(text='Hard', font=(
-        'Microsoft JhengHei UI', 13), width=10, fg='red', command=hard)
+        'Constantia', 13), width=10, fg='red', command=hard)
     hard_button.pack(pady=10)
-    game.resizable(False, False)
-    game.protocol('WM_DELETE_WINDOW', False)
     game.mainloop()
 
 
 def easy_difficulty():
     global lst_length, points, lives, difficulty
     easy_game = Tk()
-    center_window(easy_game)
+    customize_window(easy_game)
     num_lst = create_rand_questions(difficulty)
     num1, rand_op, num2 = choose_rand_questions(num_lst)
     lst_length -= 1
@@ -627,33 +619,31 @@ def easy_difficulty():
         num_lst.clear()
         easy_game.destroy()
         previous_game_page()
-    label = Label(text='Easy Difficulty', font=('Helvatical Bold', 15))
+    label = Label(text='Easy Difficulty', font=('Comic Sans MS' , 16) , bg = 'light blue')
     label.pack()
     question_box = Message(text=f'What is {num1} {rand_op} {num2}?', font=(
-        'Comic Sans MS', 17), width=350)
+        'Comic Sans MS', 16), width=350 , bg = 'light blue')
     question_box.pack(pady=20)
     answer_box = Entry()
     answer_box.pack(pady=10)
-    output_box = Message(text='', font=24, width=350)
+    output_box = Message(text='', font=('Constantia' , 13), width=350 , bg = 'light blue')
     output_box.pack()
     button = Button(text='Enter', font=(
-        'Microsoft JhengHei UI', 13), command=answer_checker)
+        'Constantia', 13), command=answer_checker)
     button.pack()
     point_box = Message(text=f'Points: {points}', font=(
-        'Comic Sans MS', 14), width=350)
+        'Comic Sans MS', 14), width=350 , bg = 'light blue')
     point_box.place(x=250, y=230)
     lives_box = Message(text=f'Lives: {lives}', font=(
-        'Comic Sans MS', 14), width=350)
+        'Comic Sans MS', 14), width=350 , bg = 'light blue')
     lives_box.place(x=350, y=230)
-    quit_button = Button(text='Quit Game', font=(
-        'Microsoft JhengHei UI', 13), command=quit_game)
-    quit_button.place(x=600, y=468)
+    quit_button = Button(text='Quit', font=(
+        'Constantia', 13), command=quit_game , width = 7 , fg = 'red')
+    quit_button.place(x=621, y=468)
     back_to_game_choice = Button(
         text='← Back', command=previous_page, font=(
-            'Microsoft JhengHei UI', 13))
+            'Constantia', 13) , fg = 'blue')
     back_to_game_choice.place(x=0, y=0)
-    easy_game.resizable(False, False)
-    easy_game.protocol('WM_DELETE_WINDOW', False)
     easy_game.mainloop()
 
 
@@ -662,7 +652,7 @@ def medium_difficulty():
     lives -= 1
     difficulty += 1
     medium_game = Tk()
-    center_window(medium_game)
+    customize_window(medium_game)
     num_lst = create_rand_questions(difficulty)
     num1, rand_op, num2 = choose_rand_questions(num_lst)
     lst_length -= 1
@@ -739,37 +729,35 @@ def medium_difficulty():
         num_lst.clear()
         medium_game.destroy()
         previous_game_page()
-    label = Label(text='Medium Difficulty', font=('Helvatical Bold', 15))
+    label = Label(text='Medium Difficulty', font=('Comic Sans MS' , 16) , bg = 'light blue')
     label.pack()
     if isinstance(result, float):
         question_msg = f'What is {num1} {rand_op} {num2} to 1 d.p?'
     else:
         question_msg = f'What is {num1} {rand_op} {num2}?'
     question_box = Message(text=f'{question_msg}', font=(
-        'Comic Sans MS', 17), width=350)
+        'Comic Sans MS', 16), width=350 , bg = 'light blue')
     question_box.pack(pady=20)
     answer_box = Entry()
     answer_box.pack(pady=10)
-    output_box = Message(text='', font=24, width=350)
+    output_box = Message(text='', font=('Constantia' , 13), width=350 , bg = 'light blue')
     output_box.pack()
     button = Button(text='Enter', font=(
-        'Microsoft JhengHei UI', 13), command=answer_checker)
+        'Constantia', 13), command=answer_checker)
     button.pack()
     point_box = Message(text=f'Points: {points}', font=(
-        'Comic Sans MS', 14), width=350)
+        'Comic Sans MS', 14), width=350 , bg = 'light blue')
     point_box.place(x=250, y=230)
     lives_box = Message(text=f'Lives: {lives}', font=(
-        'Comic Sans MS', 14), width=350)
+        'Comic Sans MS', 14), width=350 , bg = 'light blue')
     lives_box.place(x=350, y=230)
-    quit_button = Button(text='Quit Game', font=(
-        'Microsoft JhengHei UI', 13), command=quit_game)
-    quit_button.place(x=600, y=468)
+    quit_button = Button(text='Quit', font=(
+        'Constantia', 13), command=quit_game , width = 7 , fg = 'red')
+    quit_button.place(x=621, y=468)
     back_to_game_choice = Button(
         text='← Back', command=previous_page, font=(
-            'Microsoft JhengHei UI', 13))
+            'Constantia', 13) , fg = 'blue')
     back_to_game_choice.place(x=0, y=0)
-    medium_game.resizable(False, False)
-    medium_game.protocol('WM_DELETE_WINDOW', False)
     medium_game.mainloop()
 
 
@@ -778,7 +766,7 @@ def hard_difficulty():
     lives -= 2
     difficulty += 2
     hard_game = Tk()
-    center_window(hard_game)
+    customize_window(hard_game)
     num_lst = create_rand_questions(difficulty)
     num1, rand_op, num2, num3, ans = choose_rand_questions(num_lst, True)
     lst_length -= 1
@@ -847,37 +835,35 @@ def hard_difficulty():
         num_lst.clear()
         hard_game.destroy()
         previous_game_page()
-    label = Label(text='Hard Difficulty', font=('Helvatical Bold', 15))
+    label = Label(text='Hard Difficulty', font=('Comic Sans MS' , 16) , bg = 'light blue')
     label.pack()
     if isinstance(ans, float):
         question_msg = f'Find y to 1 d.p: {num1}y {rand_op} {num2} = {num3}'
     else:
         question_msg = f'Find y: {num1}y {rand_op} {num2} = {num3}'
     question_box = Message(text=f'{question_msg}', font=(
-        'Comic Sans MS', 17), width=350)
+        'Comic Sans MS', 16), width=350 , bg = 'light blue')
     question_box.pack(pady=20)
     answer_box = Entry()
     answer_box.pack(pady=10)
-    output_box = Message(text='', font=24, width=350)
+    output_box = Message(text='', font=('Constantia' , 13), width=350 , bg = 'light blue')
     output_box.pack()
     button = Button(text='Enter', font=(
-        'Microsoft JhengHei UI', 13), command=answer_checker)
+        'Constantia', 13), command=answer_checker)
     button.pack()
     point_box = Message(text=f'Points: {points}', font=(
-        'Comic Sans MS', 14), width=350)
+        'Comic Sans MS', 14), width=350 , bg = 'light blue')
     point_box.place(x=250, y=230)
     lives_box = Message(text=f'Lives: {lives}', font=(
-        'Comic Sans MS', 14), width=350)
+        'Comic Sans MS', 14), width=350 , bg = 'light blue')
     lives_box.place(x=350, y=230)
-    quit_button = Button(text='Quit Game', font=(
-        'Microsoft JhengHei UI', 13), command=quit_game)
-    quit_button.place(x=600, y=468)
+    quit_button = Button(text='Quit', font=(
+        'Constantia', 13), command=quit_game , width = 7 , fg = 'red')
+    quit_button.place(x=621, y=468)
     back_to_game_choice = Button(
         text='← Back', command=previous_page, font=(
-            'Microsoft JhengHei UI', 13))
+            'Constantia', 13) , fg = 'blue')
     back_to_game_choice.place(x=0, y=0)
-    hard_game.resizable(False, False)
-    hard_game.protocol('WM_DELETE_WINDOW', False)
     hard_game.mainloop()
 
 
@@ -886,7 +872,7 @@ def game_over_screen():
     difficulty_lst = ['Easy', 'Medium', 'Hard']
     user_personal_best = []
     game_over = Tk()
-    center_window(game_over)
+    customize_window(game_over)
     cursor.execute(
         f'SELECT best_point , best_points_difficulty FROM user_info WHERE username = "{holding_username}"')
     for i in cursor:
@@ -895,14 +881,14 @@ def game_over_screen():
         cursor.execute(
             f'UPDATE user_info SET best_point = {points} , best_points_difficulty = "{difficulty_lst[difficulty-1]}" WHERE username = "{holding_username}"')
         db.commit()
-    label = Label(text='GAME OVER!', fg='red', width=50, font=('System', 24))
+    label = Label(text='GAME OVER!', fg='red', width=50, font=('System', 24) , bg = 'light blue')
     label.pack()
     label2 = Label(
         text=f'You scored {points} in {difficulty_lst[difficulty-1]} difficulty',
         font=(
             'Comic Sans MS',
             14),
-        width=350)
+        width=350 , bg = 'light blue')
     label2.pack(pady=20)
 
     def retry_button():
@@ -920,22 +906,19 @@ def game_over_screen():
     def quit_button():
         game_over.destroy()
     retry = Button(text='Play again', font=(
-        'Microsoft JhengHei UI', 13), width=15, command=retry_button)
+        'Constantia', 13), width=15, command=retry_button , fg = 'green')
     retry.pack(pady=10)
     lb = Button(text='See Leaderboards', font=(
-        'Microsoft JhengHei UI', 13), width=15, command=lb_button)
+        'Constantia', 13), width=15, command=lb_button , fg = 'teal')
     lb.pack(pady=10)
-    quit = Button(text='Quit', font=('Microsoft JhengHei UI', 13),
-                  width=15, command=quit_button)
+    quit = Button(text='Quit', font=('Constantia', 13),
+                  width=15, command=quit_button , fg = 'red')
     quit.pack(pady=10)
-    game_over.resizable(False, False)
-    game_over.protocol('WM_DELETE_WINDOW', False)
     game_over.mainloop()
 
 
 def display_lb():
     global holding_username
-
     def leave_program():
         quit()
 
@@ -958,8 +941,8 @@ def display_lb():
     easy_lb = []
     user_points = []
     leaderboard = Tk()
-    center_window(leaderboard)
-    label = Label(text='Leaderboard', font=24)
+    customize_window(leaderboard)
+    label = Label(text='Leaderboard', font=('Comic Sans MS' , 16) , bg = 'light blue')
     label.pack()
     cursor.execute(
         'SELECT username , best_point , best_points_difficulty FROM user_info WHERE best_points_difficulty = "Hard" ORDER BY best_point DESC LIMIT 3;')
@@ -981,40 +964,38 @@ def display_lb():
         text=f'🏆🥇 {hard_lb[0][0]} scored {hard_lb[0][1]} in {hard_lb[0][2]} difficulty',
         font=(
             'Comic Sans MS',
-            14))
+            14) , bg = 'light blue' , fg = 'orange')
     first_place.pack(pady=10)
     second_place = Label(
         text=f'🏆🥈 {hard_lb[1][0]} scored {hard_lb[1][1]} in {hard_lb[1][2]} difficulty',
         font=(
             'Comic Sans MS',
-            14))
+            14) , bg = 'light blue', fg = 'gray')
     second_place.pack(pady=10)
     third_place = Label(
         text=f'🏆🥉 {hard_lb[2][0]} scored {hard_lb[2][1]} in {hard_lb[2][2]} difficulty',
         font=(
             'Comic Sans MS',
-            14))
+            14) , bg = 'light blue', fg = 'brown')
     third_place.pack(pady=10)
     display_medium = Button(text='Medium', font=(
-        'Microsoft JhengHei UI', 13), fg = 'orange' , command=shift_lb_medium)
+        'Constantia', 13), fg = 'orange' , command=shift_lb_medium)
     display_medium.place(x=300, y=195)
     display_hard = Button(text='Hard', font=(
-        'Microsoft JhengHei UI', 13), fg = 'red' , command=shift_lb_hard)
+        'Constantia', 13), fg = 'red' , command=shift_lb_hard)
     display_hard.place(x=225, y=195)
     display_easy = Button(text='Easy', font=(
-        'Microsoft JhengHei UI', 13), fg = 'green' , command=shift_lb_easy)
+        'Constantia', 13), fg = 'green' , command=shift_lb_easy)
     display_easy.place(x=400, y=195)
     if user_points[0][1] is None:
         msg = f'No personal best record'
     else:
         msg = f'Personal best is {user_points[0][0]} in {user_points[0][1]} difficulty'
-    user_best = Label(text=f'{msg}', font=24)
+    user_best = Label(text=f'{msg}', font=('Comic Sans MS' , 16) , bg = 'light blue')
     user_best.pack(pady=60)
     leave = Button(text='Quit', font=(
-        'Microsoft JhengHei UI', 13), command=leave_program)
-    leave.place(x=652, y=468)
-    leaderboard.resizable(False, False)
-    leaderboard.protocol('WM_DELETE_WINDOW', False)
+        'Constantia', 13), command=leave_program , width = 7 , fg = 'red')
+    leave.place(x=621, y=468)
     leaderboard.mainloop()
 
 
@@ -1025,4 +1006,4 @@ def main_game():
     game_difficulty_choice()
 
    
-hard_difficulty()
+authenticate_user()
