@@ -2,44 +2,47 @@ import random
 import string
 import pymysql
 from tkinter import *
+
+#Allows access to the database by making a cursor
 db = pymysql.connect(
     host='localhost',
     user='root',
     password='root',
     database='game_db')
 cursor = db.cursor()
-# ---------------------------------------------------------------------------------- (Allowing Access to db)
+
+#global variables
 attempt = 1
-holding_username = ''
-
-
-def clear_box(box_type, button_name):
-    box_type['text'] = ''
-    button_name['state'] = 'normal'
-
-
-def customize_window(window_name=Tk):
-    window_name.title("Nischal's A-level project")
-    window_name.resizable(False, False)
-    window_name.protocol('WM_DELETE_WINDOW', False)
-    window_name['bg'] = 'light blue'
-    screen_width = int((window_name.winfo_screenwidth()) / 2 - 375)
-    screen_height = int((window_name.winfo_screenheight()) / 2 - 250)
-    window_name.geometry(f'700x500+{screen_width}+{screen_height}')
-
-
+holding_username = '' #Variable that holds the user's username
 window_destroyed = False
 
+#A function that gives the illusion of an animation
+#This is done by changing the text to blank after a set number of seconds
+def clear_box(box_name, button_name):
+    box_name['text'] = ''
+    button_name['state'] = 'normal'
 
+#A function that customizes any window given the name of it
+def customize_window(window_name=Tk):
+    window_name.title("Nischal's A-level project") #Sets title of window
+    window_name.resizable(False, False) #Disables expanding the window
+    window_name.protocol('WM_DELETE_WINDOW', False) #Disables closing the window
+    window_name['bg'] = 'light blue' #Sets bg color
+    screen_width = int((window_name.winfo_screenwidth()) / 2 - 375) #Specifies screen width by taking screen width of user's device into consideration
+    screen_height = int((window_name.winfo_screenheight()) / 2 - 250) #Same as above but for screen height
+    window_name.geometry(f'700x500+{screen_width}+{screen_height}') #Specifies the position where the window is supposed to be placed
+
+#All of registration/log in is handled by this function
 def authenticate_user():
+
     def registration_page():
         global window_destroyed
         window.destroy()
-        window_destroyed = True
+        window_destroyed = True #Variable value changed to indicate the main window has been destroyed
         root = Tk()
         customize_window(root)
-        change = False
-        question_number = 0
+        change = False #Change is a variable that is true if one of the requirements has been violated
+        question_number = 0 #allows the user to proceed to the next question by changing the question index
 
         def change_questions():
             global hold_first_name, hold_password, hold_last_name
@@ -47,6 +50,7 @@ def authenticate_user():
             if question_number == 0:
                 first_name = place_holder_box.get()
                 last_name = place_holder_box2.get()
+                #From here
                 if first_name == '' or last_name == '':
                     change = True
                     error_string = 'Name cannot be blank'
@@ -58,8 +62,12 @@ def authenticate_user():
                     error_message['text'] = error_string
                     root.after(2000, clear_box, error_message, button)
                     change = False
+                #To here
+                #The code snippet validates the last name and first name
+                #By checking if they are letters and dont have numbers
                 else:
                     question_number += 1
+                    #place holders so that the first name and last name can be updated on the db later
                     hold_first_name, hold_last_name = first_name, last_name
                     place_holder_box.delete(0, END)
                     place_holder_box2.delete(0, END)
@@ -71,12 +79,15 @@ def authenticate_user():
                 if button['state'] == 'normal':
                     password = place_holder_box.get()
                     conf_password = place_holder_box2.get()
+                    #From here
                     if not (password == conf_password):
                         error_string = 'Passwords not matching'
                         change = True
                     if password == '' or conf_password == '':
                         error_string = 'Password cannot be blank'
                         change = True
+                    #To here
+                    #The code snippet validates the password by making sure they match and aren't empty
                     if change:
                         error_message['text'] = error_string
                         button['state'] = 'disabled'
@@ -87,19 +98,28 @@ def authenticate_user():
                         hold_password = password
                         place_holder_box.delete(0, END)
                         place_holder_box2.delete(0, END)
+                        #The button is disabled then enabled again to prevent python from immediately getting
+                        #The user's input as in the code above I have emptied both message boxes so
+                        #python would get the empty inputs and display an error message because of my validation
                         button['state'] = 'disabled'
                         root.after(100, clear_box, error_message, button)
             if question_number == 2:
+                #function to check if a sting has any special characters
                 def has_special_chars(str):
                     for i in str:
                         if i in string.punctuation:
                             return True
                     else:
                         return False
+
+                #function to check if an email string is valid
                 def email_validator(str):
                     if has_special_chars(str):
+                        #checks if the email string contains at least 1 '.' and only 1 '@'
                         if str.count('.') != 0 and str.count('@') == 1:
+                            #checks if there is anything before the '@' symbol
                             before_at_symbol = len(str[:str.index('@')])
+                            #checks if there is anything after the '@'symbol
                             after_at_symbol = len(str[str.index('@') + 1:])
                             if before_at_symbol > 0 and after_at_symbol > 0:
                                 return True
@@ -109,7 +129,7 @@ def authenticate_user():
                             return False
                     else:
                         return False
-
+                #function similar to clear_box() but this one takes no parameter and affects 2 boxes
                 def new_clear_box():
                     username_error_box['text'] = ''
                     email_error_box['text'] = ''
@@ -121,12 +141,18 @@ def authenticate_user():
                 if button['state'] == 'normal':
                     username = place_holder_box.get()
                     email = place_holder_box2.get()
+                    #Using the cursor to check if anyone else has the same username
                     cursor.execute(
                         f'SELECT username FROM user_info WHERE username = "{username}"')
+                    #cursor.rowcount function allows us to check if any rows were affected when searching for the username
+                    #If a row was affected then the rowcount would be greater than 0 indicating that someone already has the username
                     username_row = cursor.rowcount
+                    #Using the cursor to check if anyone else has the same email
                     cursor.execute(
                         f'SELECT email FROM user_info WHERE email = "{email}" ')
+                    #If a row was affected then the rowcount would be greater than 0 indicating that someone already has the email
                     email_row = cursor.rowcount
+                    #From here
                     if username_row != 0:
                         change = True
                         username_error_string = 'Username already taken'
@@ -145,6 +171,11 @@ def authenticate_user():
                     elif email_row != 0:
                         change = True
                         email_error_string = 'Email already taken'
+                    #To here
+                    #The code snippet validates the username and email
+                    #The username is validated by checking if rowcount = 0, it is within 3-20 chars long,
+                    #It has no special_chars and is not solely consisting of digits
+                    #The email is validated by checking if rowcount = 0 and a function email_validator()
                     if change:
                         username_error_box['text'] = username_error_string
                         email_error_box['text'] = email_error_string
@@ -153,8 +184,10 @@ def authenticate_user():
                         change = False
                     else:
                         global holding_username
+                        #global variable is changed
                         holding_username = username
                         button['state'] = 'disabled'
+                        #updating the db with the new values of first name, last name,username, password and a set value of best_points
                         cursor.execute(
                             f'INSERT INTO user_info (first_name,last_name,username,pass_word,email,best_point) VALUES ("{hold_first_name}","{hold_last_name}","{username}","{hold_password}","{email}",0)')
                         db.commit()
