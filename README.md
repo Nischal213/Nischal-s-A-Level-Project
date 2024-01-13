@@ -190,12 +190,14 @@ def authenticate_user():
                         #updating the db with the new values of first name, last name,username, password and a set value of best_points
                         cursor.execute(
                             f'INSERT INTO user_info (first_name,last_name,username,pass_word,email,best_point) VALUES ("{hold_first_name}","{hold_last_name}","{username}","{hold_password}","{email}",0)')
+                        #db is committed to save the changes
                         db.commit()
                         root.destroy()
                         direct_to_login()
 
         def previous_page():
             global window_destroyed
+            #going to the previous page so a variable change indicating that the main window hasnt been destroyed yet
             window_destroyed = False
             root.destroy()
             authenticate_user()
@@ -244,6 +246,7 @@ def authenticate_user():
         real.mainloop()
 
     def login_page():
+        #checks if main windows has been destroyed
         if not (window_destroyed):
             window.destroy()
 
@@ -253,11 +256,14 @@ def authenticate_user():
             error_string = ''
             username = username_entry.get()
             password = password_entry.get()
+            #similar function to clear_blox() but changes the state of 3 vuttons back to normal
             def lockdown(box_type , button_name , button_name2 , button_name3):
                 box_type['text'] = ''
                 button_name['state'] , button_name2['state'] , button_name3['state'] = 'normal' , 'normal' , 'normal'
             cursor.execute(
                 f'SELECT username, pass_word FROM user_info WHERE username = "{username}" AND pass_word = "{password}"')
+            #checks if the db was affected when searching for the username and password
+            #if the rows weren't affected .rowcount() would return 0
             if cursor.rowcount == 0:
                 error_string = f'Invalid password or username! Attempt: {attempt}'
                 pass_flag = False
@@ -283,6 +289,7 @@ def authenticate_user():
             master.destroy()
 
             def forgot_account_verification():
+                #same as clear_box() but affects 2 boxes
                 def custom_clear_box():
                     username_box['text'] = ''
                     email_box['text'] = ''
@@ -411,15 +418,16 @@ def authenticate_user():
     leave.place(x=621, y=468)
     window.mainloop()
 
-
-# ---------------------------------------------------------------------------------- (Register)
+#End of registration function
+    
+#Global variables
 op_lst = ['+', '-', '/', 'x']
 lst_length = 10
 points = 0
 lives = 4
 difficulty = 1
 
-
+#Makes sure the user input is only a float or int
 def valid_input_only(string):
     try:
         if round(float(string), 1) == 0.0:
@@ -429,7 +437,7 @@ def valid_input_only(string):
     except Exception:
         return False
 
-
+#goes back to the page where you can select the game difficulty
 def previous_game_page():
     global lst_length, points, lives, difficulty
     lst_length = 10
@@ -438,7 +446,7 @@ def previous_game_page():
     difficulty = 1
     game_difficulty_choice()
 
-
+#a function that checks the answer of the question randomly generated
 def get_answer(num1, rand_op, num2, algebra=False, num3=None):
     if not (algebra):
         if rand_op == '+':
@@ -450,6 +458,7 @@ def get_answer(num1, rand_op, num2, algebra=False, num3=None):
         else:
             correct_ans = round((num1 / num2), 1)
         return correct_ans
+    #the algebra parameter is only true of hard difficulty 
     else:
         index = op_lst.index(rand_op)
         if index % 2 == 0:
@@ -460,13 +469,15 @@ def get_answer(num1, rand_op, num2, algebra=False, num3=None):
             changed_op = '*'
         else:
             changed_op = op_lst[index]
+        #Gets the correct answer to any algebraic question in the form
+        # a*y {random_op} b = c where a , b , c are randomly generated
         correct_ans = eval(f'( {num3} {changed_op} {num2} ) / {num1}')
         if eval(f'{num3} {changed_op} {num2}') % num1 == 0:
             return int(correct_ans)
         else:
             return round(correct_ans, 1)
 
-
+#a function that randomly generates questions
 def create_rand_questions(difficulty):
     def generate_rand_nums(store_difficulty):
         if store_difficulty == 3:
@@ -497,7 +508,7 @@ def create_rand_questions(difficulty):
         num1, rand_op, num2 = generate_rand_nums(store_difficulty)
         results = get_answer(num1, rand_op, num2, algebra)
         if isinstance(results, float):
-            float_ans = (num1, rand_op, num2)
+            float_ans = (num1, rand_op, num2) #appends a tuple becase a tuple is immutable
             num_lst.append(float_ans)
             lst_length += 1
             counter -= 1
@@ -517,22 +528,22 @@ def create_rand_questions(difficulty):
             lst_length += 1
     return num_lst
 
-
+#gives the illusion of an animation by making the message clear after a set amount of seconds
 def clear_animation(box_name, message):
     box_name['text'] = f'{message}'
     box_name['fg'] = 'black'
 
-
+#same as clear_animation() expect specified for point_box
 def remove_point_box_animation(point_box, output_box, button, window_name=Tk):
     window_name.after(1000, clear_animation, point_box, f'Points: {points}')
     window_name.after(1000, clear_box, output_box, button)
 
-
+#same as clear_animation() expect specified for lives_box
 def remove_lives_box_animation(lives_box, output_box, button, window_name=Tk):
     window_name.after(1000, clear_animation, lives_box, f'Lives: {lives}')
     window_name.after(1000, clear_box, output_box, button)
 
-
+#chooses a random question from the array containing a tuple
 def choose_rand_questions(num_lst=list, algebra=False):
     if not (algebra):
         random_tuple = random.choice(num_lst)
@@ -546,7 +557,7 @@ def choose_rand_questions(num_lst=list, algebra=False):
             1], random_tuple[2], random_tuple[3], random_tuple[4]
         return num1, rand_op, num2, num3, ans
 
-
+#allows user to choose a game difficulty choice
 def game_difficulty_choice():
     game = Tk()
     customize_window(game)
@@ -620,13 +631,17 @@ def easy_difficulty():
                 lives_box['fg'] = 'red'
                 remove_lives_box_animation(
                     lives_box, output_box, button, easy_game)
+            #after user enters at least one answer the option to go back is removed
             if back_to_game_choice:
                 back_to_game_choice.destroy()
+            #if all the questions are used up then generate a new one
             if lst_length == 0:
                 lst_length = 10
                 num_lst = create_rand_questions(difficulty)
                 num1, rand_op, num2 = choose_rand_questions(num_lst)
                 lst_length -= 1
+            #if the user's lives hasn't depleted and the question lst is still > 0
+            #then choose another random question
             elif lives != 0 and lst_length != 0:
                 num1, rand_op, num2 = choose_rand_questions(num_lst)
                 lst_length -= 1
@@ -899,7 +914,7 @@ def hard_difficulty():
     back_to_game_choice.place(x=0, y=0)
     hard_game.mainloop()
 
-
+#User is directed here when they die or press the quit button
 def game_over_screen():
     global points, difficulty, holding_username
     difficulty_lst = ['Easy', 'Medium', 'Hard']
@@ -908,9 +923,12 @@ def game_over_screen():
     customize_window(game_over)
     cursor.execute(
         f'SELECT best_point , best_points_difficulty FROM user_info WHERE username = "{holding_username}"')
+    #Appends a tuple with (user's best points , the difficulty the best point was acheived in) to user_personal_best
     for i in cursor:
         user_personal_best.append(i)
+    #checks if the new score is higher than the personal best
     if user_personal_best[0][0] < points:
+        #the database is updated if it is
         cursor.execute(
             f'UPDATE user_info SET best_point = {points} , best_points_difficulty = "{difficulty_lst[difficulty-1]}" WHERE username = "{holding_username}"')
         db.commit()
@@ -977,6 +995,7 @@ def display_lb():
     customize_window(leaderboard)
     label = Label(text='Leaderboard', font=('Comic Sans MS' , 16) , bg = 'light blue')
     label.pack()
+    #gets the top 3 scores from hard difficulty in descending order then it is appended
     cursor.execute(
         'SELECT username , best_point , best_points_difficulty FROM user_info WHERE best_points_difficulty = "Hard" ORDER BY best_point DESC LIMIT 3;')
     for i in cursor:
@@ -1020,6 +1039,7 @@ def display_lb():
     display_easy = Button(text='Easy', font=(
         'Constantia', 13), fg = 'green' , command=shift_lb_easy)
     display_easy.place(x=400, y=195)
+    #if the best_points_difficulty is none, this indicates that they haven't played a game yet so they don't have a personal best score
     if user_points[0][1] is None:
         msg = f'No personal best record'
     else:
@@ -1032,11 +1052,20 @@ def display_lb():
     leaderboard.mainloop()
 
 
-# ----------------------------------------------------------------------------------(Game System)
-
+#End of Game
+    
+#Main function to run both the user authentication system and the game system
 def main_game():
     authenticate_user()
     game_difficulty_choice()
 
-   
-authenticate_user()
+main_game()
+
+
+# if __name__ == '__main__':
+#     main_game()
+
+'''
+Reminder to self, remember to improve QoL of my game by including a back button to leadaerboards as well
+so that the user can go back and retry immediately instead of manually quitting and launching another instance of the game
+'''
