@@ -3,6 +3,15 @@ import string
 import pymysql
 from tkinter import *
 
+"""
+Important!
+The code was formatted using the Black Formatter extension for VSCode.
+-> Name: Black Formatter
+-> Version: v2024.0.0
+-> Author: Microsoft
+-> Official documentation: https://black.readthedocs.io/en/stable/
+"""
+
 # Allows access to the database
 db = pymysql.connect(host="localhost", user="root", password="root", database="game_db")
 # Changes to the database is done through the cursor
@@ -1253,8 +1262,3 @@ def main_game():
 
 
 main_game()
-
-"""
-Reminder to self, remember to improve QoL of my game by including a back button to leadaerboards as well
-so that the user can go back and retry immediately instead of manually quitting and launching another instance of the game
-"""
